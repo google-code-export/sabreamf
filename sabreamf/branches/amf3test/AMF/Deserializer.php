@@ -18,6 +18,8 @@
                 $settype = $this->stream->readByte();
            }
 
+           echo("Type: " . dechex($settype) . "\n");
+
            switch ($settype) {
 
                 case SabreAMF_Const::AT_NUMBER      : return $this->stream->readDouble();
@@ -34,9 +36,18 @@
                 case SabreAMF_Const::AT_UNSUPPORTED : return null;
                 case SabreAMF_Const::AT_XML         : return $this->stream->readLongString();
                 case SabreAMF_Const::AT_TYPEDOBJECT : return $this->readTypedObject();
+                case 0x11                           : return $this->testData();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
  
            }
+
+        }
+
+        public function testData() {
+
+            for($i=0; $i<9; $i++) echo($this->stream->readByte());
+            echo($this->stream->readString());
+            die();
 
         }
 

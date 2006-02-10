@@ -43,11 +43,17 @@
 
             $this->InputStream = $stream;
 
-            $stream->readByte();
-          
+            $id = $stream->readByte();
+
+            echo("ID $id\n");
+
             $this->clientType = $stream->readByte();
 
+            echo("ClientType $this->clientType\n");
+
             $totalHeaders = $stream->readInt();
+
+            echo("Headers: $totalHeaders\n");
 
             for($i=0;$i<$totalHeaders;$i++) {
 
@@ -62,8 +68,9 @@
 
             }
 
-    
             $totalBodies = $stream->readInt();
+
+            echo("Bodies: $totalBodies\n");
 
             for($i=0;$i<$totalBodies;$i++) {
 
