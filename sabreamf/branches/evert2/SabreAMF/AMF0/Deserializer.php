@@ -60,7 +60,7 @@
 
                 case SabreAMF_Const::AT_AMF0_NUMBER      : return $this->readDouble();
                 case SabreAMF_Const::AT_AMF0_BOOL        : return $this->stream->readByte()==true;
-                case SabreAMF_Const::AT_AMF0_STRING      : return $this->stream->readString();
+                case SabreAMF_Const::AT_AMF0_STRING      : return $this->readString();
                 case SabreAMF_Const::AT_AMF0_OBJECT      : return $this->readObject();
                 case SabreAMF_Const::AT_AMF0_NULL        : return null; 
                 case SabreAMF_Const::AT_AMF0_UNDEFINED   : return null;
@@ -87,7 +87,7 @@
 
             $object = array();
             while (true) {
-                $key = $this->stream->readString();
+                $key = $this->readString();
                 $vartype = $this->stream->readByte();
                 if ($vartype==SabreAMF_Const::AT_AMF0_OBJECTTERM) break;
                 $object[$key] = $this->readAmfData($vartype);
@@ -145,7 +145,7 @@
          */
         public function readTypedObject() {
 
-            $classname = $this->stream->readString();
+            $classname = $this->readString();
             return $this->readObject();
 
         }
@@ -177,6 +177,44 @@
             $block = $this->stream->readBuffer(2);
             $int = unpack("n",$block);
             return $int[1];
+
+        }
+
+         /**
+         * readString 
+         * 
+         * @return string 
+         */
+        public function readString() {
+
+            $strLen = $this->readInt();
+            return $this->stream->readBuffer($strLen);
+
+        }
+
+        /**
+         * readLongString 
+         * 
+         * @return string 
+         */
+        public function readLongString() {
+
+            $strLen = $this->readLong();
+            return $this->stream->readBuffer($strLen);
+
+        }
+
+
+        /**
+         * readLong 
+         * 
+         * @return int 
+         */
+        public function readLong() {
+
+            $block = $this->stream->readBuffer(4);
+            $long = unpack("N",$block);
+            return $long[1];
         }
 
 
