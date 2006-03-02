@@ -101,12 +101,12 @@
                 $deserializer = new SabreAMF_AMF0_Deserializer($stream);
             }
 
-            $totalHeaders = $deserializer->readInt();
+            $totalHeaders = $stream->readInt();
 
             for($i=0;$i<$totalHeaders;$i++) {
 
                 $header = array(
-                    'name'     => $stream->readString(),
+                    'name'     => $deserializer->readString(),
                     'required' => $stream->readByte()==true
                 );
                 $stream->readLong();
@@ -116,14 +116,14 @@
             }
 
     
-            $totalBodies = $deserializer->readInt();
+            $totalBodies = $stream->readInt();
 
             for($i=0;$i<$totalBodies;$i++) {
 
 
                 $body = array(
-                    'target'   => $stream->readString(),
-                    'response' => $stream->readString(),
+                    'target'   => $deserializer->readString(),
+                    'response' => $deserializer->readString(),
                     'length'   => $stream->readLong(),
                     'data'     => $deserializer->readAMFData()
                 );  

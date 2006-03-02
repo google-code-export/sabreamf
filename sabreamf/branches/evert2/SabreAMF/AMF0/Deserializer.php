@@ -58,7 +58,7 @@
 
            switch ($settype) {
 
-                case SabreAMF_Const::AT_AMF0_NUMBER      : return $this->readDouble();
+                case SabreAMF_Const::AT_AMF0_NUMBER      : return $this->stream->readDouble();
                 case SabreAMF_Const::AT_AMF0_BOOL        : return $this->stream->readByte()==true;
                 case SabreAMF_Const::AT_AMF0_STRING      : return $this->readString();
                 case SabreAMF_Const::AT_AMF0_OBJECT      : return $this->readObject();
@@ -129,8 +129,8 @@
          */
         public function readDate() {
 
-            $timestamp = floor($this->readDouble() / 1000);
-            $timezoneOffset = $this->readInt();
+            $timestamp = floor($this->stream->readDouble() / 1000);
+            $timezoneOffset = $this->stream->readInt();
             if ($timezoneOffset > 720) $timezoneOffset = ((65536 - $timezoneOffset));
             $timezoneOffset=($timezoneOffset * 60) - date('Z');
             return $timestamp + ($timezoneOffset);
@@ -149,37 +149,7 @@
             return $this->readObject();
 
         }
-
-         /**
-         * readDouble 
-         * 
-         * @return float 
-         */
-        public function readDouble() {
-
-            $double = $this->stream->readBuffer(8);
-
-            $testEndian = unpack("C*",pack("S*",256));
-            $bigEndian = !$testEndian[1]==1;
-                        
-            if ($bigEndian) $double = strrev($double);
-            $double = unpack("d",$double);
-            return $double[1];
-        }
         
-         /**
-         * readInt 
-         * 
-         * @return int 
-         */
-        public function readInt() {
-
-            $block = $this->stream->readBuffer(2);
-            $int = unpack("n",$block);
-            return $int[1];
-
-        }
-
          /**
          * readString 
          * 
@@ -187,7 +157,7 @@
          */
         public function readString() {
 
-            $strLen = $this->readInt();
+            $strLen = $this->stream->readInt();
             return $this->stream->readBuffer($strLen);
 
         }
@@ -199,23 +169,11 @@
          */
         public function readLongString() {
 
-            $strLen = $this->readLong();
+            $strLen = $this->stream->readLong();
             return $this->stream->readBuffer($strLen);
 
         }
 
-
-        /**
-         * readLong 
-         * 
-         * @return int 
-         */
-        public function readLong() {
-
-            $block = $this->stream->readBuffer(4);
-            $long = unpack("N",$block);
-            return $long[1];
-        }
 
 
    }

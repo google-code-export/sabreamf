@@ -66,12 +66,48 @@
 
         }
 
+        /**
+         * readInt 
+         * 
+         * @return int 
+         */
+        public function readInt() {
+
+            $block = $this->readBuffer(2);
+            $int = unpack("n",$block);
+            return $int[1];
+
+        }
+
+
+        /**
+         * readDouble 
+         * 
+         * @return float 
+         */
+        public function readDouble() {
+
+            $double = $this->readBuffer(8);
+
+            $testEndian = unpack("C*",pack("S*",256));
+            $bigEndian = !$testEndian[1]==1;
+                        
+            if ($bigEndian) $double = strrev($double);
+            $double = unpack("d",$double);
+            return $double[1];
+        }
 
         /**
          * readLong 
          * 
          * @return int 
          */
+        public function readLong() {
+
+            $block = $this->readBuffer(4);
+            $long = unpack("N",$block);
+            return $long[1];
+        }
 
         
     }
