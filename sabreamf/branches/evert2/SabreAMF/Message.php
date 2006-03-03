@@ -1,9 +1,9 @@
 <?php
 
+    require_once dirname(__FILE__) . '/AMF0/Serializer.php'; 
     require_once dirname(__FILE__) . '/AMF0/Deserializer.php'; 
     require_once dirname(__FILE__) . '/AMF3/Deserializer.php';
 
-    require_once dirname(__FILE__) . '/Serializer.php'; 
 
     /**
      * SabreAMF_Message 
@@ -65,9 +65,9 @@
                 $serializer = new SabreAMF_Serializer($stream);
                 
                 $stream->writeString($header['name']);
-                $stream->writeByte($header['required']);
+                $stream->writeByte($header['required']==true);
                 $stream->writeLong(-1);
-                $seralizer->writeAMFData($header['data']);
+                $serializer->writeAMFData($header['data']);
             }
             $stream->writeInt(count($this->bodies));
 
@@ -89,6 +89,9 @@
          */
         public function deserialize(SabreAMF_InputStream $stream) {
 
+            $this->headers = array();
+            $this->bodies = array();
+
             $this->InputStream = $stream;
 
             $stream->readByte();
@@ -106,7 +109,7 @@
             for($i=0;$i<$totalHeaders;$i++) {
 
                 $header = array(
-                    'name'     => $deserializer->readString(),
+                    'name'     => $stream->readString(),
                     'required' => $stream->readByte()==true
                 );
                 $stream->readLong();
@@ -122,8 +125,8 @@
 
 
                 $body = array(
-                    'target'   => $deserializer->readString(),
-                    'response' => $deserializer->readString(),
+                    'target'   => $stream->readString(),
+                    'response' => $stream->readString(),
                     'length'   => $stream->readLong(),
                     'data'     => $deserializer->readAMFData()
                 );  
@@ -153,6 +156,17 @@
         public function getBodies() {
 
             return $this->bodies;
+
+        }
+
+        /**
+         * getHeaders 
+         * 
+         * @return array 
+         */
+        public function getHeaders() {
+
+            return $this->headers;
 
         }
 

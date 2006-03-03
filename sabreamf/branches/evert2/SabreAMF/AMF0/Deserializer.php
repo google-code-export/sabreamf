@@ -1,6 +1,7 @@
 <?php
 
-//    require_once(dirname(__FILE__) . '/../Deserializer.php');
+    require_once dirname(__FILE__) . '/../Const.php';
+
 
     /**
      * SabreAMF_Deserializer 
@@ -60,7 +61,7 @@
 
                 case SabreAMF_Const::AT_AMF0_NUMBER      : return $this->stream->readDouble();
                 case SabreAMF_Const::AT_AMF0_BOOL        : return $this->stream->readByte()==true;
-                case SabreAMF_Const::AT_AMF0_STRING      : return $this->readString();
+                case SabreAMF_Const::AT_AMF0_STRING      : return $this->stream->readString();
                 case SabreAMF_Const::AT_AMF0_OBJECT      : return $this->readObject();
                 case SabreAMF_Const::AT_AMF0_NULL        : return null; 
                 case SabreAMF_Const::AT_AMF0_UNDEFINED   : return null;
@@ -87,12 +88,12 @@
 
             $object = array();
             while (true) {
-                $key = $this->readString();
+                $key = $this->stream->readString();
                 $vartype = $this->stream->readByte();
                 if ($vartype==SabreAMF_Const::AT_AMF0_OBJECTTERM) break;
                 $object[$key] = $this->readAmfData($vartype);
             }
-            return $object;    
+            return (object)$object;    
 
         }
 
@@ -145,34 +146,11 @@
          */
         public function readTypedObject() {
 
-            $classname = $this->readString();
+            $classname = $this->stream->readString();
             return $this->readObject();
 
         }
         
-         /**
-         * readString 
-         * 
-         * @return string 
-         */
-        public function readString() {
-
-            $strLen = $this->stream->readInt();
-            return $this->stream->readBuffer($strLen);
-
-        }
-
-        /**
-         * readLongString 
-         * 
-         * @return string 
-         */
-        public function readLongString() {
-
-            $strLen = $this->stream->readLong();
-            return $this->stream->readBuffer($strLen);
-
-        }
 
 
 
