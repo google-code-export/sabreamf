@@ -34,6 +34,7 @@
         const AT_AMF0_UNSUPPORTED = 0x0e;
         const AT_AMF0_XML         = 0x0f;
         const AT_AMF0_TYPEDOBJECT = 0x10;
+        const AT_AMF0_AMF3        = 0x11;
 
         const AT_AMF3_NULL        = 0x01;
         const AT_AMF3_BOOL_FALSE  = 0x02;
@@ -43,7 +44,7 @@
         const AT_AMF3_STRING      = 0x06;
         const AT_AMF3_DATE        = 0x08;
         const AT_AMF3_ARRAY       = 0x09;
-        const AT_AMF3_OBJECT      = 0x0a;
+        const AT_AMF3_OBJECT      = 0x0A;
 
    }
 

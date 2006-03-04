@@ -1,6 +1,7 @@
 <?php
 
     require_once dirname(__FILE__) . '/../Const.php';
+    require_once dirname(__FILE__) . '/../AMF3/Deserializer.php';
 
 
     /**
@@ -73,6 +74,7 @@
                 case SabreAMF_Const::AT_AMF0_UNSUPPORTED : return null;
                 case SabreAMF_Const::AT_AMF0_XML         : return $this->stream->readLongString();
                 case SabreAMF_Const::AT_AMF0_TYPEDOBJECT : return $this->readTypedObject();
+                case SabreAMF_Const::AT_AMF0_AMF3        : return $this->readAMF3Data();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
  
            }
@@ -151,7 +153,12 @@
 
         }
         
+        public function readAMF3Data() {
 
+            $deserializer = new SabreAMF_AMF3_Deserializer($this->stream);
+            return $deserializer->readAMFData();
+
+        }
 
 
    }
