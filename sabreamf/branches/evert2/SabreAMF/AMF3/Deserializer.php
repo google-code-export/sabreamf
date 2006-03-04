@@ -66,12 +66,14 @@
 
            switch ($settype) {
 
-                case SabreAMF_Const::AT_AMF3_NULL    : return null;
-                case SabreAMF_Const::AT_AMF3_INTEGER : return $this->readInt();
-                case SabreAMF_Const::AT_AMF3_NUMBER  : return $this->stream->readDouble();
-                case SabreAMF_Const::AT_AMF3_STRING  : return $this->readString();
-                case SabreAMF_Const::AT_AMF3_ARRAY   : return $this->readArray();
-                case SabreAMF_Const::AT_AMF3_OBJECT  : return $this->readObject();
+                case SabreAMF_Const::AT_AMF3_NULL       : return null;
+                case SabreAMF_Const::AT_AMF3_BOOL_FALSE : return false;
+                case SabreAMF_Const::AT_AMF3_BOOL_TRUE  : return true;
+                case SabreAMF_Const::AT_AMF3_INTEGER    : return $this->readInt();
+                case SabreAMF_Const::AT_AMF3_NUMBER     : return $this->stream->readDouble();
+                case SabreAMF_Const::AT_AMF3_STRING     : return $this->readString();
+                case SabreAMF_Const::AT_AMF3_ARRAY      : return $this->readArray();
+                case SabreAMF_Const::AT_AMF3_OBJECT     : return $this->readObject();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
 
 

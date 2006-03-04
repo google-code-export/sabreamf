@@ -13,6 +13,7 @@
 
         const AC_Flash    = 0;
         const AC_FlashCom = 1;
+        const AC_Flex     = 3;
 
         const R_RESULT = 1;
         const R_STATUS = 2;
