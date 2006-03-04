@@ -24,12 +24,6 @@
          * @var int
          */
         private $objectcount;
-        /**
-         * refList 
-         * 
-         * @var array 
-         */
-        private $refList;
 
         /**
          * storedStrings 
@@ -37,6 +31,13 @@
          * @var array 
          */
         private $storedStrings = array();
+
+        /**
+         * storedObjects 
+         * 
+         * @var array 
+         */
+        private $storedObjects = array();
 
 
         /**
@@ -91,7 +92,12 @@
             // Check if object is stored
             
             if (($objref & 0x01) == 0) {
-                die('Stored object');
+                 $objref = $objref >> 1;
+                 if ($objref>=count($this->storedObjects)) {
+                    throw new Exception('Undefined object reference: ' . $objref);
+                    return false;
+                }
+                return $this->storedObjects[$objref]; 
             } else {
                 $classref = $objref >> 1;
         
@@ -105,9 +111,7 @@
 
                 $objType = ($classref>>1) & 0x03;
 
-                if (($objType & 1)==1) {
-                    die('Weird object #1');
-                } elseif (($objType & 2)==2) {
+               if (($objType & 2)==2) {
                     $obj = array();
                     do {
                         $propertyName = $this->readString();
@@ -120,14 +124,19 @@
                 
                      $obj = array();
                      $propertyNames = array();
-                     for($i=0;$i<$propertyCount;$i++) {
-                         $propertyName = $this->readString();
-                         $propertyNames[] = $propertyName;
+                     if (($objType & 1)==1) {
+                         $propertyNames[] = 'source';
+                     } else {
+                        for($i=0;$i<$propertyCount;$i++) {
+                            $propertyName = $this->readString();
+                             $propertyNames[] = $propertyName;
+                        }
                      }
                      foreach($propertyNames as $pn) {
                          $obj[$pn] = $this->readAMFData();
                      }
                 }
+                $this->storedObjects[] = $obj;
                 return (object)$obj;
                 
             }
@@ -138,7 +147,12 @@
 
             $arrRef = $this->readInt();
             if (($arrRef & 0x01)==0) {
-                die('Stored array');
+                 $arrRef = $arrRef >> 1;
+                 if ($arrRef>=count($this->storedObjects)) {
+                    throw new Exception('Undefined array reference: ' . $arrRef);
+                    return false;
+                }
+                return $this->storedObjects[$arrRef]; 
             }
             $arrLen = $arrRef >> 1;
             
@@ -147,6 +161,8 @@
             for($i=0;$i<$arrLen;$i++) {
                 $data[] = $this->readAMFData();
             }
+
+            $this->storedObjects[] = $data;
             return $data;
 
         }
