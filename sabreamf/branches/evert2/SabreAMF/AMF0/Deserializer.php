@@ -3,7 +3,7 @@
     require_once dirname(__FILE__) . '/../Const.php';
     require_once dirname(__FILE__) . '/../Deserializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Deserializer.php';
-
+    require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
 
     /**
      * SabreAMF_AMF0_Deserializer 
@@ -140,7 +140,7 @@
         public function readAMF3Data() {
 
             $deserializer = new SabreAMF_AMF3_Deserializer($this->stream);
-            return $deserializer->readAMFData();
+            return new SabreAMF_AMF3_Wrapper($deserializer->readAMFData());
 
         }
 

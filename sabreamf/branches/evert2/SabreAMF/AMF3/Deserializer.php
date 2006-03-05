@@ -84,7 +84,7 @@
                     throw new Exception('Undefined object reference: ' . $objref);
                     return false;
                 }
-                return $this->storedObjects[$objref]; 
+                return (object)$this->storedObjects[$objref]; 
             } else {
                 $classref = $objref >> 1;
         
