@@ -43,6 +43,7 @@
         const AT_AMF3_INTEGER     = 0x04;
         const AT_AMF3_NUMBER      = 0x05;
         const AT_AMF3_STRING      = 0x06;
+        const AT_AMF3_XML         = 0x07;
         const AT_AMF3_DATE        = 0x08;
         const AT_AMF3_ARRAY       = 0x09;
         const AT_AMF3_OBJECT      = 0x0A;

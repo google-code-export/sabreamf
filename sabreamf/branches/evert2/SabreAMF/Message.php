@@ -61,7 +61,7 @@
             
             foreach($this->headers as $header) {
 
-                $serializer = new SabreAMF_Serializer($stream);
+                $serializer = new SabreAMF_AMF0_Serializer($stream);
                 
                 $stream->writeString($header['name']);
                 $stream->writeByte($header['required']==true);
@@ -71,7 +71,7 @@
             $stream->writeInt(count($this->bodies));
 
             foreach($this->bodies as $body) {
-                $serializer = new SabreAMF_Serializer($stream);
+                $serializer = new SabreAMF_AMF0_Serializer($stream);
                 $stream->writeString($body['target']);
                 $stream->writeString($body['response']);
                 $stream->writeLong(-1);

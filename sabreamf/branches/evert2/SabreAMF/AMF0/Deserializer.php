@@ -1,26 +1,22 @@
 <?php
 
     require_once dirname(__FILE__) . '/../Const.php';
+    require_once dirname(__FILE__) . '/../Deserializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Deserializer.php';
 
 
     /**
-     * SabreAMF_Deserializer 
+     * SabreAMF_AMF0_Deserializer 
      * 
-     * @package SabreAMF 
+     * @package SabreAMF
+     * @subpackage AMF0
      * @version $Id$
      * @copyright 2006 Rooftop Solutions
      * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
-    class SabreAMF_AMF0_Deserializer {
+    class SabreAMF_AMF0_Deserializer extends SabreAMF_Deserializer {
 
-        /**
-         * stream 
-         * 
-         * @var SabreAMF_InputStream
-         */
-        private $stream;
         /**
          * objectcount 
          * 
@@ -33,18 +29,6 @@
          * @var array 
          */
         private $refList;
-
-        /**
-         * __construct 
-         * 
-         * @param SabreAMF_InputStream $stream 
-         * @return void
-         */
-        public function __construct(SabreAMF_InputStream $stream) {
-
-            $this->stream = $stream;
-
-        }
 
         /**
          * readAMFData 

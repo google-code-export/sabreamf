@@ -1,5 +1,7 @@
 <?php
 
+    require_once dirname(__FILE__) . '/../Deserializer.php';
+
     /**
      * SabreAMF_AMF3_Deserializer 
      * 
@@ -10,14 +12,8 @@
      * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
-    class SabreAMF_AMF3_Deserializer {
+    class SabreAMF_AMF3_Deserializer extends SabreAMF_Deserializer {
 
-        /**
-         * stream 
-         * 
-         * @var SabreAMF_InputStream
-         */
-        private $stream;
         /**
          * objectcount 
          * 
@@ -41,18 +37,6 @@
 
 
         /**
-         * __construct 
-         * 
-         * @param SabreAMF_InputStream $stream 
-         * @return void
-         */
-        public function __construct(SabreAMF_InputStream $stream) {
-
-            $this->stream = $stream;
-
-        }
-
-        /**
          * readAMFData 
          * 
          * @param mixed $settype 
@@ -66,12 +50,13 @@
 
            switch ($settype) {
 
-                case SabreAMF_Const::AT_AMF3_NULL       : return null;
-                case SabreAMF_Const::AT_AMF3_BOOL_FALSE : return false;
-                case SabreAMF_Const::AT_AMF3_BOOL_TRUE  : return true;
+                case SabreAMF_Const::AT_AMF3_NULL       : return 'NULL';
+                case SabreAMF_Const::AT_AMF3_BOOL_FALSE : return 'FALSE';
+                case SabreAMF_Const::AT_AMF3_BOOL_TRUE  : return 'TRUE';
                 case SabreAMF_Const::AT_AMF3_INTEGER    : return $this->readInt();
                 case SabreAMF_Const::AT_AMF3_NUMBER     : return $this->stream->readDouble();
                 case SabreAMF_Const::AT_AMF3_STRING     : return $this->readString();
+                case SabreAMF_Const::AT_AMF3_XML        : return $this->readString();
                 case SabreAMF_Const::AT_AMF3_ARRAY      : return $this->readArray();
                 case SabreAMF_Const::AT_AMF3_OBJECT     : return $this->readObject();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
@@ -117,8 +102,9 @@
                     $obj = array();
                     do {
                         $propertyName = $this->readString();
-                        if ($propertyName!=='') {
-                            $obj[$propertyName] = $this->readAMFData();
+                       if ($propertyName!=='' || is_null($propertyName)) {
+                            $propValue = $this->readAMFData();
+                            $obj[$propertyName] = $propValue;
                         }
                     } while($propertyName !=='');
                 } else {
@@ -147,20 +133,23 @@
 
         private function readArray() {
 
-            $arrRef = $this->readInt();
-            if (($arrRef & 0x01)==0) {
-                 $arrRef = $arrRef >> 1;
-                 if ($arrRef>=count($this->storedObjects)) {
-                    throw new Exception('Undefined array reference: ' . $arrRef);
+            $arrId = $this->readInt();
+            if (($arrId & 0x01)==0) {
+                 $arrId = $arrId >> 1;
+                 if ($arrId>=count($this->storedObjects)) {
+                    throw new Exception('Undefined array reference: ' . $arrId);
                     return false;
                 }
-                return $this->storedObjects[$arrRef]; 
+                return $this->storedObjects[$arrId]; 
             }
-            $arrLen = $arrRef >> 1;
+            $arrId = $arrId >> 1;
             
             $data = array();
 
-            for($i=0;$i<$arrLen;$i++) {
+            $this->stream->readByte();
+    
+
+            for($i=0;$i<$arrId;$i++) {
                 $data[] = $this->readAMFData();
             }
 

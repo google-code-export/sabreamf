@@ -1,36 +1,19 @@
 <?php
 
     require_once dirname(__FILE__) . '/../Const.php';
+    require_once dirname(__FILE__) . '/../Serializer.php';
 
     /**
-     * SabreAMF_Serializer 
+     * SabreAMF_AMF0_Serializer 
      * 
-     * @package SabreAMF 
+     * @package SabreAMF
+     * @subpackage AMF0
      * @version $Id$
      * @copyright 2006 Rooftop Solutions
      * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
-    class SabreAMF_Serializer {
-
-        /**
-         * stream 
-         * 
-         * @var SabreAMF_OutputStream 
-         */
-        private $stream;
-
-        /**
-         * __construct 
-         * 
-         * @param SabreAMF_OutputStream $stream 
-         * @return void
-         */
-        public function __construct(SabreAMF_OutputStream $stream) {
-
-            $this->stream = $stream;
-
-        }
+    class SabreAMF_AMF0_Serializer extends SabreAMF_Serializer {
 
         /**
          * writeAMFData 
