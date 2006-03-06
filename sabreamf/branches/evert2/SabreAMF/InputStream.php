@@ -33,6 +33,10 @@
          */
         public function __construct($data) {
 
+            if (!is_string($data)) {
+                throw new Exception('Inputdata is not of type String');
+                return false;
+            }
             $this->rawData = $data;
 
         }

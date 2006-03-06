@@ -1,5 +1,6 @@
 <?php
 
+    require_once dirname(__FILE__) . '/Const.php';
     require_once dirname(__FILE__) . '/../Const.php';
     require_once dirname(__FILE__) . '/../Deserializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Deserializer.php';
@@ -44,21 +45,21 @@
 
            switch ($settype) {
 
-                case SabreAMF_Const::AT_AMF0_NUMBER      : return $this->stream->readDouble();
-                case SabreAMF_Const::AT_AMF0_BOOL        : return $this->stream->readByte()==true;
-                case SabreAMF_Const::AT_AMF0_STRING      : return $this->stream->readString();
-                case SabreAMF_Const::AT_AMF0_OBJECT      : return $this->readObject();
-                case SabreAMF_Const::AT_AMF0_NULL        : return null; 
-                case SabreAMF_Const::AT_AMF0_UNDEFINED   : return null;
+                case SabreAMF_AMF0_Const::DT_NUMBER      : return $this->stream->readDouble();
+                case SabreAMF_AMF0_Const::DT_BOOL        : return $this->stream->readByte()==true;
+                case SabreAMF_AMF0_Const::DT_STRING      : return $this->stream->readString();
+                case SabreAMF_AMF0_Const::DT_OBJECT      : return $this->readObject();
+                case SabreAMF_AMF0_Const::DT_NULL        : return null; 
+                case SabreAMF_AMF0_Const::DT_UNDEFINED   : return null;
                 //case self::AT_REFERENCE   : return $this->readReference();
-                case SabreAMF_Const::AT_AMF0_MIXEDARRAY  : return $this->readMixedArray();
-                case SabreAMF_Const::AT_AMF0_ARRAY       : return $this->readArray();
-                case SabreAMF_Const::AT_AMF0_DATE        : return $this->readDate();
-                case SabreAMF_Const::AT_AMF0_LONGSTRING  : return $this->stream->readLongString();
-                case SabreAMF_Const::AT_AMF0_UNSUPPORTED : return null;
-                case SabreAMF_Const::AT_AMF0_XML         : return $this->stream->readLongString();
-                case SabreAMF_Const::AT_AMF0_TYPEDOBJECT : return $this->readTypedObject();
-                case SabreAMF_Const::AT_AMF0_AMF3        : return $this->readAMF3Data();
+                case SabreAMF_AMF0_Const::DT_MIXEDARRAY  : return $this->readMixedArray();
+                case SabreAMF_AMF0_Const::DT_ARRAY       : return $this->readArray();
+                case SabreAMF_AMF0_Const::DT_DATE        : return $this->readDate();
+                case SabreAMF_AMF0_Const::DT_LONGSTRING  : return $this->stream->readLongString();
+                case SabreAMF_AMF0_Const::DT_UNSUPPORTED : return null;
+                case SabreAMF_AMF0_Const::DT_XML         : return $this->stream->readLongString();
+                case SabreAMF_AMF0_Const::DT_TYPEDOBJECT : return $this->readTypedObject();
+                case SabreAMF_AMF0_Const::DT_AMF3        : return $this->readAMF3Data();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
  
            }
@@ -76,7 +77,7 @@
             while (true) {
                 $key = $this->stream->readString();
                 $vartype = $this->stream->readByte();
-                if ($vartype==SabreAMF_Const::AT_AMF0_OBJECTTERM) break;
+                if ($vartype==SabreAMF_AMF0_Const::DT_OBJECTTERM) break;
                 $object[$key] = $this->readAmfData($vartype);
             }
             return (object)$object;    

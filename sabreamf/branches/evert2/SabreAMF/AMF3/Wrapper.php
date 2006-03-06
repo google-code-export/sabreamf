@@ -12,12 +12,27 @@
      */
     class SabreAMF_AMF3_Wrapper {
 
+
         /**
          * data 
          * 
          * @var mixed
          */
         private $data;
+
+
+        /**
+         * __construct 
+         * 
+         * @param mixed $data 
+         * @return void
+         */
+        public function __construct($data) {
+
+            $this->setData($data);
+
+        }
+        
 
         /**
          * getData 
@@ -26,7 +41,7 @@
          */
         public function getData() {
 
-            return $data;
+            return $this->data;
 
         }
 

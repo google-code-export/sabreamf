@@ -40,6 +40,17 @@
          */
         public abstract function writeAMFData($data,$forcetype=null); 
 
+        /**
+         * getStream
+         *
+         * @return SabreAMF_OutputStream
+         */
+
+        public function getStream() {
+
+            return $this->stream;
+
+        }
 
     }
 

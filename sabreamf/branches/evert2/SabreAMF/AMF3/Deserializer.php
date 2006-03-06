@@ -1,5 +1,7 @@
 <?php
 
+    require_once dirname(__FILE__) . '/Const.php';
+    require_once dirname(__FILE__) . '/../Const.php';
     require_once dirname(__FILE__) . '/../Deserializer.php';
 
     /**
@@ -50,15 +52,15 @@
 
            switch ($settype) {
 
-                case SabreAMF_Const::AT_AMF3_NULL       : return 'NULL';
-                case SabreAMF_Const::AT_AMF3_BOOL_FALSE : return 'FALSE';
-                case SabreAMF_Const::AT_AMF3_BOOL_TRUE  : return 'TRUE';
-                case SabreAMF_Const::AT_AMF3_INTEGER    : return $this->readInt();
-                case SabreAMF_Const::AT_AMF3_NUMBER     : return $this->stream->readDouble();
-                case SabreAMF_Const::AT_AMF3_STRING     : return $this->readString();
-                case SabreAMF_Const::AT_AMF3_XML        : return $this->readString();
-                case SabreAMF_Const::AT_AMF3_ARRAY      : return $this->readArray();
-                case SabreAMF_Const::AT_AMF3_OBJECT     : return $this->readObject();
+                case SabreAMF_AMF3_Const::DT_NULL       : return null; 
+                case SabreAMF_AMF3_Const::DT_BOOL_FALSE : return false;
+                case SabreAMF_AMF3_Const::DT_BOOL_TRUE  : return true;
+                case SabreAMF_AMF3_Const::DT_INTEGER    : return $this->readInt();
+                case SabreAMF_AMF3_Const::DT_NUMBER     : return $this->stream->readDouble();
+                case SabreAMF_AMF3_Const::DT_STRING     : return $this->readString();
+                case SabreAMF_AMF3_Const::DT_XML        : return $this->readString();
+                case SabreAMF_AMF3_Const::DT_ARRAY      : return $this->readArray();
+                case SabreAMF_AMF3_Const::DT_OBJECT     : return $this->readObject();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
 
 
@@ -78,7 +80,7 @@
 
             // Check if object is stored
             
-            if (($objref & 0x01) == 0) {
+            if (($objref & 0x01)==0) {
                  $objref = $objref >> 1;
                  if ($objref>=count($this->storedObjects)) {
                     throw new Exception('Undefined object reference: ' . $objref);
@@ -192,13 +194,14 @@
 
             $byte = $this->stream->readByte();
 
-            while($byte >> 7 == 1 && $count < 4) {
+            while(($byte >> 7 == 1) && $count < 4) {
                 $int = $int | (($byte & 0x7F) << ($count*7));
                 $byte = $this->stream->readByte();
                 $count++;
             }
             $int = $int | $byte;
 
+            //Negative values
             if (($int >> 27)==1) {
                 $int = $int | 0xF0000000;
             }
