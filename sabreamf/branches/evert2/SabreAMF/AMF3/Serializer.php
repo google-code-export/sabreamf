@@ -79,32 +79,25 @@
                 $this->writeAMFData($v);
 
             }
+            $this->writeString('');
 
         }
 
         private function writeInt($int) {
 
-            $count = 4;
-          
-            if ($int==0) {
-                $this->stream->writeByte(0);
-                return true;
+            $count = 0;
+            $bytes = array();
+            for($i=0;$i<4;$i++) {
+                $bytes[] = ($int >> (7*$i)) & 0x7F;
             }
-          
-            while($count>0) {
-
-               $count--;
-               $n = ($int >> ($count*7));
-
-               if ($n>0) {
-                   $byte = $n & 0x7F;
-                   if ($count>0) $byte = $byte | 0x80;
-                   echo("Byte $byte\n");
-                   $this->stream->writeByte($byte);
-               }
-
+            $bytes = array_reverse($bytes);
+            while(count($bytes)>1 && $bytes[0] == 0) {
+                array_shift($bytes);
             }
-            
+            foreach($bytes as $k=>$byte) {
+                if ($k<count($bytes)-1) $byte = $byte | 0x80;
+                $this->stream->writeByte($byte);
+            }    
 
         }
 
@@ -119,13 +112,13 @@
         private function writeArray($arr) {
 
             end($arr);
-            $arrLen = key($arr);
-          
-            $arrId = $arrLen << 1 | 0x01;
+            $arrLen = count($arr); 
+         
+            $arrId = ($arrLen << 1) | 0x01;
             $this->writeInt($arrId);
-
-            for($i=0;$i<$arrLen;$i++) {
-                $this->writeAMFData(isset($arr[$i])?$arr[$i]:null);
+            
+            foreach($arr as $v) {
+                $this->writeAMFData($v);
             }
 
         }

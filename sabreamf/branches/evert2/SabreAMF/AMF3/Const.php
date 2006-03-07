@@ -24,7 +24,8 @@
 
         const ET_OBJ_INLINE   = 0x01;
         const ET_CLASS_INLINE = 0x02;
-        const ET_PROPSERIAL   = 0x04;
+        const ET_PROPDEF      = 0x04;
+        const ET_PROPSERIAL   = 0x08;
 
    }
 

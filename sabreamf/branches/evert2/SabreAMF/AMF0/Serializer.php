@@ -5,7 +5,7 @@
     require_once dirname(__FILE__) . '/../Serializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Serializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
-
+    require_once dirname(__FILE__) . '/../AMF3/ITypedObject.php';
 
     /**
      * SabreAMF_AMF0_Serializer 
@@ -37,7 +37,7 @@
                 if (!$type && is_string($data))  $type = SabreAMF_AMF0_Const::DT_STRING;
                 if (!$type && is_array($data))   $type = SabreAMF_AMF0_Const::DT_MIXEDARRAY;
                 if (!$type && is_object($data)) {
-                    if($data instanceof SabreAMF_TypedObject) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
+                    if($data instanceof SabreAMF_ITypedObject) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
                     else if ($data instanceof SabreAMF_AMF3_Wrapper) $type = SabreAMF_AMF0_Const::DT_AMF3;
                     else $type = SabreAMF_AMF0_Const::DT_OBJECT;
                 }

@@ -104,11 +104,11 @@
                     $obj = array();
                     do {
                         $propertyName = $this->readString();
-                       if ($propertyName!=='' || is_null($propertyName)) {
+                        if ($propertyName!='' && !is_null($propertyName)) {
                             $propValue = $this->readAMFData();
                             $obj[$propertyName] = $propValue;
                         }
-                    } while($propertyName !=='');
+                    } while($propertyName !='');
                 } else {
                      $propertyCount = $classref >> 3;
                 
@@ -148,7 +148,7 @@
             
             $data = array();
 
-            $this->stream->readByte();
+            //$this->stream->readByte();
     
 
             for($i=0;$i<$arrId;$i++) {
@@ -195,17 +195,19 @@
             $byte = $this->stream->readByte();
 
             while(($byte >> 7 == 1) && $count < 4) {
-                $int = $int | (($byte & 0x7F) << ($count*7));
+                $int = ($int  | (($byte & 0x7F) << ($count*7)));
                 $byte = $this->stream->readByte();
+                echo("Read: $byte\n");
                 $count++;
             }
             $int = $int | $byte;
 
+/*
             //Negative values
             if (($int >> 27)==1) {
                 $int = $int | 0xF0000000;
             }
-
+*/
             return $int;
          
         }
