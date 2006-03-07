@@ -138,6 +138,11 @@
 
         }
         
+        /**
+         * readAMF3Data 
+         * 
+         * @return SabreAMF_AMF3_Wrapper 
+         */
         public function readAMF3Data() {
 
             $deserializer = new SabreAMF_AMF3_Deserializer($this->stream);

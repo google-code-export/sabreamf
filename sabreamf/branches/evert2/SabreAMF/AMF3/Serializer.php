@@ -63,6 +63,12 @@
 
         }
 
+        /**
+         * writeObject 
+         * 
+         * @param mixed $data 
+         * @return void
+         */
         public function writeObject($data) {
 
             if ($data instanceof SabreAMF_ITypedObject) {
@@ -94,6 +100,12 @@
 
         }
 
+        /**
+         * writeInt 
+         * 
+         * @param int $int 
+         * @return void
+         */
         private function writeInt($int) {
 
             $count = 0;
@@ -112,6 +124,12 @@
 
         }
 
+        /**
+         * writeString 
+         * 
+         * @param string $str 
+         * @return void
+         */
         private function writeString($str) {
 
             $strref = strlen($str) << 1 | 0x01;
@@ -120,6 +138,12 @@
 
         }
 
+        /**
+         * writeArray 
+         * 
+         * @param array $arr 
+         * @return void
+         */
         private function writeArray($arr) {
 
             end($arr);

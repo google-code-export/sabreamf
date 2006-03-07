@@ -141,6 +141,11 @@
 
         }
 
+        /**
+         * readArray 
+         * 
+         * @return array 
+         */
         private function readArray() {
 
             $arrId = $this->readInt();
@@ -195,6 +200,11 @@
         }
 
 
+        /**
+         * readInt 
+         * 
+         * @return int 
+         */
         private function readInt() {
 
             $count = 1;

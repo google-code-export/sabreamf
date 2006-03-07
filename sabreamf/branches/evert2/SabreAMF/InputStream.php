@@ -33,6 +33,7 @@
          */
         public function __construct($data) {
 
+            //Rawdata has to be a string
             if (!is_string($data)) {
                 throw new Exception('Inputdata is not of type String');
                 return false;

@@ -17,6 +17,7 @@
          * @return string 
          */
         public function getAMFClassName();
+
         /**
          * getAMFData 
          * 

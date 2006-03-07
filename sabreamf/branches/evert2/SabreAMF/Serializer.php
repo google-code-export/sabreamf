@@ -45,7 +45,6 @@
          *
          * @return SabreAMF_OutputStream
          */
-
         public function getStream() {
 
             return $this->stream;

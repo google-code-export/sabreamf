@@ -106,10 +106,10 @@
         /**
          * writeTypedObject 
          * 
-         * @param SabreAMF_TypedObject $data 
+         * @param SabreAMF_ITypedObject $data 
          * @return void
          */
-        public function writeTypedObject($data) {
+        public function writeTypedObject(SabreAMF_ITypedObject $data) {
 
             $this->stream->writeString($data->getAMFClassName());
             return $this->writeObject($data->getAMFData());
