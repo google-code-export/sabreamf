@@ -5,6 +5,7 @@
     require_once dirname(__FILE__) . '/../Deserializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Deserializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
+    require_once dirname(__FILE__) . '/../TypedObject.php';
 
     /**
      * SabreAMF_AMF0_Deserializer 
@@ -133,8 +134,7 @@
          */
         public function readTypedObject() {
 
-            $classname = $this->stream->readString();
-            return $this->readObject();
+            return new SabreAMF_TypedObject($this->stream->readString(),$this->readObject());
 
         }
         
