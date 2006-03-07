@@ -30,7 +30,7 @@
                $type=false;
                if (!$type && is_null($data))    $type = SabreAMF_AMF3_Const::DT_NULL;
                if (!$type && is_bool($data))    {
-                    $type = $data?SabreAMF_AMF3_Const::DT_BOOL_TRUE:SabreAMF_AMF3_Const::DT_AMF3_BOOL_FALSE;
+                    $type = $data?SabreAMF_AMF3_Const::DT_BOOL_TRUE:SabreAMF_AMF3_Const::DT_BOOL_FALSE;
                 }
                 if (!$type && is_int($data))     $type = SabreAMF_AMF3_Const::DT_INTEGER;
                 if (!$type && is_float($data))   $type = SabreAMF_AMF3_Const::DT_NUMBER;
@@ -56,7 +56,7 @@
                 case SabreAMF_AMF3_Const::DT_INTEGER     : $this->writeInt($data); break;
                 case SabreAMF_AMF3_Const::DT_STRING      : $this->writeString($data); break;
                 case SabreAMF_AMF3_Const::DT_ARRAY       : $this->writeArray($data); break;
-                case SabreAMF_AMF3_Const::DT_OBJECT      : $this->writeObject($data); break;
+                case SabreAMF_AMF3_Const::DT_OBJECT      : $this->writeObject($data); break; 
                 default                   :  throw new Exception('Unsupported type: ' . gettype($data)); return null; 
  
            }
@@ -65,13 +65,24 @@
 
         public function writeObject($data) {
 
+            if ($data instanceof SabreAMF_ITypedObject) {
+
+                $classname = $data->getAMFClassName();
+                $data = $data->getAMFData();
+
+            } else {
+
+                $classname = '';
+
+            }
+
             $refId = SabreAMF_AMF3_Const::ET_OBJ_INLINE | SabreAMF_AMF3_Const::ET_CLASS_INLINE | SabreAMF_AMF3_Const::ET_PROPSERIAL;
 
             $refId = $refId | (count($data) << 4);
 
             $this->writeInt($refId);
 
-            $this->writeString('');
+            $this->writeString($classname);
 
             foreach($data as $k=>$v) {
 
@@ -116,7 +127,8 @@
          
             $arrId = ($arrLen << 1) | 0x01;
             $this->writeInt($arrId);
-            
+            $this->writeInt(1); // Not sure what this is 
+           
             foreach($arr as $v) {
                 $this->writeAMFData($v);
             }

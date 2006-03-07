@@ -2,7 +2,9 @@
 
     require_once dirname(__FILE__) . '/Const.php';
     require_once dirname(__FILE__) . '/../Const.php';
-    require_once dirname(__FILE__) . '/../Deserializer.php';
+    require_once dirname(__FILE__) . '/../InputStream.php';
+    require_once dirname(__FILE__) . '/../TypedObject.php';
+
 
     /**
      * SabreAMF_AMF3_Deserializer 
@@ -79,7 +81,6 @@
             $objref = $this->readInt();
 
             // Check if object is stored
-            
             if (($objref & 0x01)==0) {
                  $objref = $objref >> 1;
                  if ($objref>=count($this->storedObjects)) {
@@ -100,7 +101,9 @@
 
                 $objType = ($classref>>1) & 0x03;
 
-               if (($objType & 2)==2) {
+                // Check to see the encoding type
+                if (($objType & 2)==2) {
+                    // Property-value pairs
                     $obj = array();
                     do {
                         $propertyName = $this->readString();
@@ -109,14 +112,16 @@
                             $obj[$propertyName] = $propValue;
                         }
                     } while($propertyName !='');
-                } else {
-                     $propertyCount = $classref >> 3;
+                 } else {
+                    $propertyCount = $classref >> 3;
                 
                      $obj = array();
                      $propertyNames = array();
                      if (($objType & 1)==1) {
-                         $propertyNames[] = 'source';
+                          // One single value, no propertyname. Not sure what to do with this, so following ServiceCapture's example and naming the property 'source'
+                          $propertyNames[] = 'source';
                      } else {
+                        //None of the above. First read all the propertynames, then the values 
                         for($i=0;$i<$propertyCount;$i++) {
                             $propertyName = $this->readString();
                              $propertyNames[] = $propertyName;
@@ -125,6 +130,9 @@
                      foreach($propertyNames as $pn) {
                          $obj[$pn] = $this->readAMFData();
                      }
+                }
+                if ($classname) {
+                    $obj = new SabreAMF_TypedObject($classname,$obj);
                 }
                 $this->storedObjects[] = $obj;
                 return (object)$obj;
@@ -148,7 +156,7 @@
             
             $data = array();
 
-            //$this->stream->readByte();
+            $this->stream->readByte();
     
 
             for($i=0;$i<$arrId;$i++) {

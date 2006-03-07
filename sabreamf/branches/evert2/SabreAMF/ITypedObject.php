@@ -14,13 +14,13 @@
         /**
          * getAMFClassName 
          * 
-         * @return void
+         * @return string 
          */
         public function getAMFClassName();
         /**
          * getAMFData 
          * 
-         * @return void
+         * @return mixed 
          */
         public function getAMFData();
 

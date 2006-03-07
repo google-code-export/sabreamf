@@ -5,7 +5,7 @@
     require_once dirname(__FILE__) . '/../Serializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Serializer.php';
     require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
-    require_once dirname(__FILE__) . '/../AMF3/ITypedObject.php';
+    require_once dirname(__FILE__) . '/../ITypedObject.php';
 
     /**
      * SabreAMF_AMF0_Serializer 
