@@ -4,8 +4,7 @@
     require_once 'SabreAMF/Const.php';
     require_once 'SabreAMF/TypedObject.php';
     require_once 'SabreAMF/Deserializer.php';
-    require_once 'SabreAMF/ByteArray.php';
-    require_once 'SabreAMF/Externalized.php';
+
 
     /**
      * SabreAMF_AMF3_Deserializer 
@@ -13,10 +12,9 @@
      * @package SabreAMF
      * @subpackage AMF3
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl)
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @author Karl von Randow http://xk72.com/
-     * @author Jim Mischel
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      * @uses SabreAMF_Const
      * @uses SabreAMF_AMF3_Const
@@ -45,12 +43,6 @@
          */
         private $storedObjects = array();
 
-        /**
-         * storedClasses 
-         * 
-         * @var array
-         */
-        private $storedClasses = array();
 
         /**
          * readAMFData 
@@ -78,7 +70,6 @@
                 case SabreAMF_AMF3_Const::DT_ARRAY      : return $this->readArray();
                 case SabreAMF_AMF3_Const::DT_OBJECT     : return $this->readObject();
                 case SabreAMF_AMF3_Const::DT_XMLSTRING  : return $this->readXMLString();
-                case SabreAMF_AMF3_Const::DT_BYTEARRAY  : return $this->readByteArray();
                 default                   :  throw new Exception('Unsupported type: 0x' . strtoupper(str_pad(dechex($settype),2,0,STR_PAD_LEFT))); return false;
 
 
@@ -94,135 +85,111 @@
          */
         public function readObject() {
 
-            $objInfo = $this->readInt();
-            $storedObject = ($objInfo & 0x01)==0;
-            $objInfo = $objInfo >> 1;
+            $objref = $this->readInt();
 
-            if ($storedObject) {
-
-                $objectReference = $objInfo;
-                if (!isset($this->storedObjects[$objectReference])) {
-
-                    throw new Exception('Object reference #' . $objectReference . ' not found');
-
-                } else {
-
-                    $rObject = $this->storedObject[$objectReference];
-
+            // Check if object is stored
+            if (($objref & 0x01)==0) {
+                 $objref = $objref >> 1;
+                 if ($objref>=count($this->storedObjects)) {
+                    throw new Exception('Undefined object reference: ' . $objref);
+                    return false;
                 }
-
+                return (object)$this->storedObjects[$objref]; 
             } else {
-
-                $storedClass = ($objInfo & 0x01)==0;
-                $objInfo= $objInfo >> 1;
-
-                // If this is a stored  class.. we have the info
-                if ($storedClass) {
-                  
-                    $classReference = $objInfo;
-                    if (!isset($this->storedClasses[$classReference])) {
-
-                        throw new Exception('Class reference #' . $classReference . ' not found');
-
-                    } else {
-
-                        $encodingType = $this->storedClasses[$classReference]['encodingType'];
-                        $propertyNames = $this->storedClasses[$classReference]['propertyNames'];
-                        $className = $this->storedClasses[$classReference]['className'];
-
-                    }
-                  
-                } else { 
-
-                    $className = $this->readString();
-                    $encodingType = $objInfo & 0x03;
-                    $propertyNames = array();
-                    $objInfo = $objInfo >> 2;
-
+                $classref = $objref >> 1;
+                $objType = ($classref>>1) & 0x03;
+        
+                // Check if class is stored
+                
+                if (($classref & 0x01) == 0) {
+                    $classref = $classref >> 1;
+                    if ($classref>=count($this->storedObjects)) {
+	                    throw new Exception('Undefined class reference: ' . $classref);
+	                    return false;
+	                }
+	                $classtemplate = $this->storedObjects[$classref];
+	                if ($classtemplate instanceof SabreAMF_ITypedObject) {
+						$classname = $classtemplate->getAMFClassName();	                	
+	                } else {
+	                	$classname = false;
+	                }
+                } else {
+                    $classname = $this->readString();
+                    $classtemplate = false;
                 }
-                  
-                //ClassMapping magic
-                if ($className) {
-
-                    if ($localClassName = SabreAMF_ClassMapper::getLocalClass($className)) {
-
-                        $rObject = new $localClassName();
-
-                    } else {
-
-                        $rObject = new SabreAMF_TypedObject($className,array());
-
+                
+                // Create the values array and store it in the storedObjects
+                // before reading the properties.
+                $values = array();
+                $isMapped = false;
+                if ($classname) {
+                    if ($localClass = $this->getLocalClassName($classname)) {
+                        $obj = new $localClass();
+                        $isMapped = true;
+                    } else {   
+                        $obj = new SabreAMF_TypedObject($classname,$values);
                     }
                 } else {
-
-                    $rObject = new STDClass(); 
-
+                	$obj = &$values;
                 }
+                
+                $this->storedObjects[] = $obj;
 
-                $this->storedObjects[] =& $rObject;
-
-                if ($encodingType & SabreAMF_AMF3_Const::ET_EXTERNALIZED) {
-
-                    if (!$storedClass) {
-                        $this->storedClasses[] = array('className' => $className,'encodingType'=>$encodingType,'propertyNames'=>$propertyNames);
-                    }
-                    if ($rObject instanceof SabreAMF_Externalized) {
-                        $rObject->readExternal($this->readAMFData());
-                    } elseif ($rObject instanceof SabreAMF_TypedObject) {
-                        $rObject->setAMFData(array('externalizedData'=>$this->readAMFData()));
-                    } else {
-                        $rObject->externalizedData = $this->readAMFData();
-                    }
-                    //$properties['externalizedData'] = $this->readAMFData();
-
-                } else {
-
-                    if ($encodingType & SabreAMF_AMF3_Const::ET_SERIAL) {
-
-                        if (!$storedClass) {
-                            $this->storedClasses[] = array('className' => $className,'encodingType'=>$encodingType,'propertyNames'=>$propertyNames);
-                        }
-                        $properties = array();
-                        do {
+                // Check to see the encoding type
+                switch ($objType) {
+                	case 2:
+                	{
+                		if ($classtemplate) {
+                			$propertyNames = array_keys($classtemplate->getAMFData());
+                			for ($i=0; $i<count($propertyNames); $i++) {
+                				$values[$propertyNames[$i]] = $this->readAMFData();
+                			}
+                		} else {
+	                		// Property-value pairs
+		                    do {
+		                        $propertyName = $this->readString();
+		                        if ($propertyName!='' && !is_null($propertyName)) {
+		                            $propValue = $this->readAMFData();
+		                            $values[$propertyName] = $propValue;
+		                        }
+		                    } while($propertyName !='');
+                		}
+                	}
+                	break;
+                	case 1:
+                	{
+                		// One single value, no propertyname. Not sure what to do with this, so following ServiceCapture's example and naming the property 'source'
+                        $values["source"] = $this->readAMFData();
+                	}
+                	break;
+                	case 0:
+                	{
+                		$propertyCount = $classref >> 3;
+                		$propertyNames = array();
+                		// First read all the propertynames, then the values 
+                        for($i=0;$i<$propertyCount;$i++) {
                             $propertyName = $this->readString();
-                            if ($propertyName!="") {
-                                $propertyNames[] = $propertyName;
-                                $properties[$propertyName] = $this->readAMFData();
-                            }
-                        } while ($propertyName!="");
-                        
-                        
-                    } else {
-                        if (!$storedClass) {
-                            $propertyCount = $objInfo;
-                            for($i=0;$i<$propertyCount;$i++) {
-
-                                $propertyNames[] = $this->readString();
-
-                            }
-                            $this->storedClasses[] = array('className' => $className,'encodingType'=>$encodingType,'propertyNames'=>$propertyNames);
-
+                             $propertyNames[] = $propertyName;
                         }
-
-                        $properties = array();
-                        foreach($propertyNames as $propertyName) {
-
-                            $properties[$propertyName] = $this->readAMFData();
-
-                        }
-
-                    }
-                    
-                    if ($rObject instanceof SabreAMF_TypedObject) {
-                        $rObject->setAMFData($properties);
-                    } else {
-                        foreach($properties as $k=>$v) if ($k) $rObject->$k = $v;
-                    }
-
+                        
+                        foreach($propertyNames as $pn) {
+	                        $values[$pn] = $this->readAMFData();
+	                    }
+                	}
+                	break;
                 }
+                
+                if ($isMapped) {
+                    foreach($values as $k=>$v) {
+                        $obj->$k = $v;
+                    }
+                } else if ($obj instanceof SabreAMF_ITypedObject) {
+	        		$obj->setAMFData($values);
+	            } 
 
+                return (object)$obj;
+                
             }
-            return $rObject;
 
         }
 
@@ -248,12 +215,12 @@
 
             $this->stream->readByte();
     
-            $this->storedObjects[] &= $data;
 
             for($i=0;$i<$arrId;$i++) {
                 $data[] = $this->readAMFData();
             }
 
+            $this->storedObjects[] = $data;
             return $data;
 
         }
@@ -274,11 +241,11 @@
                     throw new Exception('Undefined string reference: ' . $strref);
                     return false;
                 }
-                return $this->storedStrings[$strref];
+                return $this->storedStrings[$strref >> 1];
             } else {
                 $strlen = $strref >> 1; 
                 $str = $this->stream->readBuffer($strlen);
-                if ($str != "") $this->storedStrings[] = $str;
+                $this->storedStrings[] = $str;
                 return $str;
             }
 
@@ -296,24 +263,10 @@
 
             $strlen = $strref >> 1; 
             $str = $this->stream->readBuffer($strlen);
-            return simplexml_load_string($str);
+            return $str;
 
         }
 
-        /**
-         * readString 
-         * 
-         * @return string 
-         */
-        public function readByteArray() {
-
-            $strref = $this->readInt();
-
-            $strlen = $strref >> 1; 
-            $str = $this->stream->readBuffer($strlen);
-            return new SabreAMF_ByteArray($str);
-
-        }
 
         /**
          * readInt 
@@ -368,13 +321,14 @@
                 }
                 return $this->storedObjects[$dateref];
             }
+            //$timeOffset = ($dateref >> 1) * 6000 * -1;
+            $ms = $this->stream->readDouble();
 
-            $timestamp = floor($this->stream->readDouble() / 1000);
-
-            $dateTime = new DateTime('@' . $timestamp);
+            //$date = $ms-$timeOffset;
+            $date = $ms;
             
-            $this->storedObjects[] = $dateTime;
-            return $dateTime;
+            $this->storedObjects[] = $date;
+            return $date;
         }
  
 

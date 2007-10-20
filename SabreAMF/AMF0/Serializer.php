@@ -1,11 +1,11 @@
 <?php
 
-    require_once 'SabreAMF/AMF3/Const.php';
-    require_once 'SabreAMF/Const.php';
-    require_once 'SabreAMF/Serializer.php';
-    require_once 'SabreAMF/AMF3/Serializer.php';
-    require_once 'SabreAMF/AMF3/Wrapper.php';
-    require_once 'SabreAMF/ITypedObject.php';
+    require_once dirname(__FILE__) . '/Const.php';
+    require_once dirname(__FILE__) . '/../Const.php';
+    require_once dirname(__FILE__) . '/../Serializer.php';
+    require_once dirname(__FILE__) . '/../AMF3/Serializer.php';
+    require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
+    require_once dirname(__FILE__) . '/../ITypedObject.php';
 
     /**
      * SabreAMF_AMF0_Serializer 
@@ -13,8 +13,8 @@
      * @package SabreAMF
      * @subpackage AMF0
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      * @uses SabreAMF_Const
      * @uses SabreAMF_AMF0_Const
@@ -73,16 +73,14 @@
                 // Its an object
                 if (!$type && is_object($data)) {
 
-                    // If its an AMF3 wrapper.. we treat it as such
-                    if ($data instanceof SabreAMF_AMF3_Wrapper) $type = SabreAMF_AMF0_Const::DT_AMF3;
-
-                    else if ($data instanceof DateTime) $type = SabreAMF_AMF0_Const::DT_DATE;
-
                     // We'll see if its registered in the classmapper
-                    else if ($this->getRemoteClassName(get_class($data))) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
+                    if ($this->getRemoteClassName(get_class($data))) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
 
                     // Otherwise.. check if it its an TypedObject
                     else if ($data instanceof SabreAMF_ITypedObject) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
+
+                    // If its an AMF3 wrapper.. we treat it as such
+                    else if ($data instanceof SabreAMF_AMF3_Wrapper) $type = SabreAMF_AMF0_Const::DT_AMF3;
 
                     // If everything else fails, its a general object
                     else $type = SabreAMF_AMF0_Const::DT_OBJECT;
@@ -106,7 +104,6 @@
                 case SabreAMF_AMF0_Const::DT_NULL        : return true;
                 case SabreAMF_AMF0_Const::DT_MIXEDARRAY  : return $this->writeMixedArray($data);
                 case SabreAMF_AMF0_Const::DT_ARRAY       : return $this->writeArray($data);
-                case SabreAMF_AMF0_Const::DT_DATE        : return $this->writeDate($data);
                 case SabreAMF_AMF0_Const::DT_LONGSTRING  : return $this->writeLongString();
                 case SabreAMF_AMF0_Const::DT_TYPEDOBJECT : return $this->writeTypedObject($data);
                 case SabreAMF_AMF0_Const::DT_AMF3        : return $this->writeAMF3Data($data);
@@ -205,12 +202,12 @@
          * @param object $data 
          * @return void
          */
-        public function writeTypedObject($data) {
+        public function writeTypedObject(object $data) {
 
             if ($data instanceof SabreAMF_ITypedObject) {
-                    $classname = $data->getAMFClassName();
+                $classname = $data->getAMFClassName();
                 $data = $data->getAMFData();
-            } else $classname = $this->getRemoteClassName(get_class($data));
+            } else $classname = $this->getRemoteClass(get_class($data));
 
             $this->writeString($classname);
             return $this->writeObject($data);
@@ -229,20 +226,6 @@
             $serializer = new SabreAMF_AMF3_Serializer($this->stream);
             return $serializer->writeAMFData($data->getData());
 
-        }
-
-        /**
-         * Writes a date object 
-         * 
-         * @param DateTime $data 
-         * @return void
-         */
-        public function writeDate(DateTime $data) {
-
-            $this->stream->writeDouble($data->format('U')*1000);
-
-            // empty timezone
-            $this->stream->writeInt(0);
         }
 
     }

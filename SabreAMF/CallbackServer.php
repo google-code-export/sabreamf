@@ -6,7 +6,6 @@
     require_once('SabreAMF/AMF3/RemotingMessage.php');
     require_once('SabreAMF/AMF3/CommandMessage.php');
     require_once('SabreAMF/AMF3/ErrorMessage.php');
-    require_once('SabreAMF/DetailException.php');
 
     /**
      * AMF Server
@@ -29,25 +28,12 @@
     class SabreAMF_CallbackServer extends SabreAMF_Server {
 
         /**
-         * Assign this callback to handle method-calls 
+         * onInvokeService
          *
          * @var callback
          */
         public $onInvokeService;
 
-        /**
-         * Assign this callback to handle authentication requests 
-         * 
-         * @var callback 
-         */
-        public $onAuthenticate;
-
-        /**
-         * handleCommandMessage 
-         * 
-         * @param SabreAMF_AMF3_CommandMessage $request 
-         * @return Sabre_AMF3_AbstractMessage 
-         */
         private function handleCommandMessage(SabreAMF_AMF3_CommandMessage $request) {
 
             switch($request->operation) {
@@ -55,48 +41,14 @@
                 case SabreAMF_AMF3_CommandMessage::CLIENT_PING_OPERATION :
                     $response = new SabreAMF_AMF3_AcknowledgeMessage($request);
                     break;
-                case SabreAMF_AMF3_CommandMessage::LOGIN_OPERATION :
-                    $authData = base64_decode($request->body);
-                    if ($authData) {
-                        $authData = explode(':',$authData,2);
-                        if (count($authData)==2) {
-                            $this->authenticate($authData[0],$authData[1]);
-                        }
-                    }
-                    $response = new SabreAMF_AMF3_AcknowledgeMessage($request);
-                    $response->body = true;
-                    break;
                 default :
-                    throw new Exception('Unsupported CommandMessage operation: '  . $request->operation);
+                    throw new Exception('Unknown CommandMessage operation: '  . $request->operation);
 
             }
             return $response;
 
         }
 
-        /**
-         * authenticate 
-         * 
-         * @param string $username 
-         * @param string $password 
-         * @return void
-         */
-        protected function authenticate($username,$password) {
-
-            if (is_callable($this->onAuthenticate)) {
-                call_user_func($this->onAuthenticate,$username,$password);
-            }
-
-        }
-
-        /**
-         * invokeService 
-         * 
-         * @param string $service 
-         * @param string $method 
-         * @param array $data 
-         * @return mixed 
-         */
         protected function invokeService($service,$method,$data) {
 
             if (is_callable($this->onInvokeService)) {
@@ -114,21 +66,6 @@
          * @return void
          */
         public function exec() {
-
-            // First we'll be looping through the headers to see if there's anything we reconize
-
-            foreach($this->getRequestHeaders() as $header) {
-
-                switch($header['name']) {
-
-                    // We found a credentials headers, calling the authenticate method
-                    case 'Credentials' :
-                        $this->authenticate($header['data']['userid'],$header['data']['password']);
-                        break;
-
-                }
-
-            }
 
             foreach($this->getRequests() as $request) {
 
@@ -176,27 +113,21 @@
 
                     // We got an exception somewhere, ignore anything that has happened and send back
                     // exception information
-
-                    if ($e instanceof SabreAMF_DetailException) {
-                        $detail = $e->getDetail();
-                    } else {
-                        $detail = '';
-                    }
+                    
 
                     switch($AMFVersion) {
                         case 0 :
                             $response = array(
                                 'description' => $e->getMessage(),
-                                'detail'      => $detail,
+                                'details'     => false,
                                 'line'        => $e->getLine(), 
-                                'code'        => $e->getCode()?$e->getCode():get_class($e),
+                                'code'        => $e->getCode(),
                             );
                             break;
                         case 3 :
                             $response = new SabreAMF_AMF3_ErrorMessage($request['data']);
                             $response->faultString = $e->getMessage();
                             $response->faultCode   = $e->getCode();
-                            $response->faultDetail = $detail;
                             break;
 
                     }
