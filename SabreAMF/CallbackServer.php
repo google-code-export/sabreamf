@@ -63,7 +63,7 @@
                             $this->authenticate($authData[0],$authData[1]);
                         }
                     }
-                    $response = new SabreAMF_AMF3_AcknowledgeMessage($request);
+                    $response = new SabreAMF_AMF3_AcknowlegdeMessage($request);
                     $response->body = true;
                     break;
                 default :
@@ -177,7 +177,7 @@
                     // We got an exception somewhere, ignore anything that has happened and send back
                     // exception information
 
-                    if ($e instanceof SabreAMF_DetailException) {
+                    if ($e instanceof SabreAMF_Exception) {
                         $detail = $e->getDetail();
                     } else {
                         $detail = '';
@@ -189,7 +189,7 @@
                                 'description' => $e->getMessage(),
                                 'detail'      => $detail,
                                 'line'        => $e->getLine(), 
-                                'code'        => $e->getCode()?$e->getCode():get_class($e),
+                                'code'        => $e->getCode(),
                             );
                             break;
                         case 3 :

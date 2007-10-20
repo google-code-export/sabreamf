@@ -12,8 +12,8 @@
      * 
      * @package SabreAMF 
      * @version $Id$
-     * @copyright 2006, 2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      * @uses SabreAMF_AMF0_Serializer
      * @uses SabreAMF_AMF0_Deserializer
@@ -161,15 +161,13 @@
                     'length'   => $stream->readLong(),
                     'data'     => $deserializer->readAMFData(null,true)
                 );
+              
              
-
-                if ($body['data'] instanceof SabreAMF_AMF3_Wrapper) {
-                    $body['data'] = $body['data']->getData();
+                if (is_array($body['data']) && isset($body['data'][0]) && $body['data'][0] instanceof SabreAMF_AMF3_Wrapper) {
+                    $body['data'] = $body['data'][0]->getData();
                     $this->encoding = SabreAMF_Const::AMF3;
                 }
                
-
-
                 $this->bodies[] = $body;    
 
             }
