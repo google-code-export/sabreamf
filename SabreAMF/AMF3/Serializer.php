@@ -15,7 +15,6 @@
      * @copyright 2006-2007 Rooftop Solutions
      * @author Evert Pot (http://www.rooftopsolutions.nl) 
      * @author Karl von Randow http://xk72.com/
-     * @author Develar
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      * @uses SabreAMF_Const
      * @uses SabreAMF_AMF3_Const
@@ -49,13 +48,11 @@
                 }
                 if (!$type && is_object($data)) {
 
-                    if ($data instanceof SabreAMF_ByteArray) 
+                    if ($data instanceof SabreAMF_ByteArray) {
                         $type = SabreAMF_AMF3_Const::DT_BYTEARRAY;
-                    elseif ($data instanceof DateTime) 
-                        $type = SabreAMF_AMF3_Const::DT_DATE;
-                    else 
+                    } else {
                         $type = SabreAMF_AMF3_Const::DT_OBJECT;
-                    
+                    }
 
                 }
                 if ($type===false) {
@@ -77,7 +74,6 @@
                 case SabreAMF_AMF3_Const::DT_INTEGER     : $this->writeInt($data); break;
                 case SabreAMF_AMF3_Const::DT_NUMBER      : $this->stream->writeDouble($data); break;
                 case SabreAMF_AMF3_Const::DT_STRING      : $this->writeString($data); break;
-                case SabreAMF_AMF3_Const::DT_DATE        : $this->writeDate($data); break;
                 case SabreAMF_AMF3_Const::DT_ARRAY       : $this->writeArray($data); break;
                 case SabreAMF_AMF3_Const::DT_OBJECT      : $this->writeObject($data); break; 
                 case SabreAMF_AMF3_Const::DT_BYTEARRAY   : $this->writeByteArray($data); break;
@@ -164,31 +160,26 @@
          */
         public function writeInt($int) {
 
+            $count = 0;
             $bytes = array();
-            if (($int & 0xff000000) == 0) {
-
-                for($i = 3; $i > -1; $i--) {
-                    $bytes[] = ($int >> (7 * $i)) & 0x7F;
-                }
-                
+            if (($int & 0xff000000) != 0) {
+            	$bytes[] = $int & 0xFF;
+            	for($i=0;$i<3;$i++) {
+	                $bytes[] = ($int >> (8 + 7*$i)) & 0x7F;
+	            }
             } else {
-
-                for ($i = 2; $i > -1; $i--) {
-                    $bytes[] = ($int >> (8 + 7 * $i)) & 0x7F;
-                }
-
-                $bytes[] = $int & 0xFF;
-
+	            for($i=0;$i<4;$i++) {
+	                $bytes[] = ($int >> (7*$i)) & 0x7F;
+	            }
             }
-            for($i = 0; $i < 3; $i++) {
-
-                if ($bytes[$i]>0) {
-
-                    $this->stream->writeByte($bytes[$i] | 0x80);
-
-                }
+            $bytes = array_reverse($bytes);
+            while(count($bytes)>1 && $bytes[0] == 0) {
+                array_shift($bytes);
             }
-            $this->stream->writeByte($bytes[3]);
+            foreach($bytes as $k=>$byte) {
+                if ($k<count($bytes)-1) $byte = $byte | 0x80;
+                $this->stream->writeByte($byte);
+            }    
 
         }
 
@@ -218,7 +209,7 @@
          * @param array $arr 
          * @return void
          */
-        public function writeArray(array $arr) {
+        public function writeArray($arr) {
 
             end($arr);
             $arrLen = count($arr); 
@@ -233,19 +224,6 @@
 
         }
         
-        /**
-         * Writes a date object 
-         * 
-         * @param DateTime $data 
-         * @return void
-         */
-        public function writeDate(DateTime $data) {
-
-            // We're always sending actual date objects, never references
-            $this->writeInt(0x01);
-            $this->stream->writeDouble($data->format('U')*1000);
-
-        }
 
     }
 

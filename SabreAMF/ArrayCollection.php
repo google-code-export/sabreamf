@@ -23,7 +23,7 @@
          * 
          * @var array 
          */
-        private $data; 
+        private $data;
 
         /**
          * Construct this object 
@@ -31,10 +31,9 @@
          * @param array $data pass an array here to populate the array collection 
          * @return void
          */
-        function __construct($data = array()) {
+        function __construct(array $data = null) {
 
-            if (!$data) $data = array();
-            $this->data = new ArrayObject($data);
+            if ($data) $this->data = new ArrayObject($data);
 
         }
 
@@ -105,11 +104,7 @@
          */
         function offsetSet($offset,$value) {
 
-            if (!is_null($offset)) {
-                $this->data[$offset] = $value;
-            } else {
-                $this->data[] = $value;
-            }
+            $this->data[$offset] = $value;
 
         }
 

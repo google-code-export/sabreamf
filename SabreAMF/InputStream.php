@@ -7,8 +7,8 @@
      * 
      * @package SabreAMF 
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
     class SabreAMF_InputStream {
@@ -53,7 +53,7 @@
         public function &readBuffer($length) {
 
             if ($length+$this->cursor > strlen($this->rawData)) {
-                throw new Exception('Buffer underrun at position: '. $this->cursor . '. Trying to fetch '. $length . ' bytes');
+                throw new UnderflowException('Buffer underrun at position: '. $this->cursor . '. Trying to fetch '. $length . ' bytes');
                 return false;
             }
             $data = substr($this->rawData,$this->cursor,$length);
