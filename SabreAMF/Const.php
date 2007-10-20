@@ -7,8 +7,8 @@
      * 
      * @package SabreAMF 
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
     final class SabreAMF_Const {
@@ -64,11 +64,6 @@
          * AMF3 Encoding
          */
         const AMF3 = 3;
-
-        /**
-         * AMF3 Encoding + flex messaging wrappers
-         */
-        const FLEXMSG = 16;
 
    }
 
