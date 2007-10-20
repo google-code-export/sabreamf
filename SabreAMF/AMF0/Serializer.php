@@ -1,11 +1,11 @@
 <?php
 
-    require_once 'SabreAMF/AMF3/Const.php';
-    require_once 'SabreAMF/Const.php';
-    require_once 'SabreAMF/Serializer.php';
-    require_once 'SabreAMF/AMF3/Serializer.php';
-    require_once 'SabreAMF/AMF3/Wrapper.php';
-    require_once 'SabreAMF/ITypedObject.php';
+    require_once dirname(__FILE__) . '/Const.php';
+    require_once dirname(__FILE__) . '/../Const.php';
+    require_once dirname(__FILE__) . '/../Serializer.php';
+    require_once dirname(__FILE__) . '/../AMF3/Serializer.php';
+    require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
+    require_once dirname(__FILE__) . '/../ITypedObject.php';
 
     /**
      * SabreAMF_AMF0_Serializer 
@@ -13,8 +13,8 @@
      * @package SabreAMF
      * @subpackage AMF0
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      * @uses SabreAMF_Const
      * @uses SabreAMF_AMF0_Const
@@ -33,62 +33,19 @@
          */
         public function writeAMFData($data,$forcetype=null) {
 
-           //If theres no type forced we'll try detecting it
            if (is_null($forcetype)) {
                 $type=false;
-
-                // NULL type
                 if (!$type && is_null($data))    $type = SabreAMF_AMF0_Const::DT_NULL;
-
-                // Boolean
                 if (!$type && is_bool($data))    $type = SabreAMF_AMF0_Const::DT_BOOL;
-
-                // Number
                 if (!$type && is_numeric($data)) $type = SabreAMF_AMF0_Const::DT_NUMBER;
-
-                // String (a long one)
                 if (!$type && is_string($data) && strlen($data)>65536) $type = SabreAMF_Const::DT_LONGSTRING;
-
-                // Normal string
                 if (!$type && is_string($data))  $type = SabreAMF_AMF0_Const::DT_STRING;
-
-                // Checking if its an array
-                if (!$type && is_array($data))   {
-
-                    // Looping through the array to see if there are any
-                    // non-numeric keys
-                    foreach(array_keys($data) as $key) {
-                        if (!is_numeric($key)) {
-                            // There's a non-numeric key.. we'll make it a mixed
-                            // array
-                            $type = SabreAMF_AMF0_Const::DT_MIXEDARRAY;
-                            break;
-                        }
-                    }
-
-                    // Pure array
-                    if (!$type) $type = SabreAMF_AMF0_Const::DT_ARRAY;
-                }
-
-                // Its an object
+                if (!$type && is_array($data))   $type = SabreAMF_AMF0_Const::DT_MIXEDARRAY;
                 if (!$type && is_object($data)) {
-
-                    // If its an AMF3 wrapper.. we treat it as such
-                    if ($data instanceof SabreAMF_AMF3_Wrapper) $type = SabreAMF_AMF0_Const::DT_AMF3;
-
-                    else if ($data instanceof DateTime) $type = SabreAMF_AMF0_Const::DT_DATE;
-
-                    // We'll see if its registered in the classmapper
-                    else if ($this->getRemoteClassName(get_class($data))) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
-
-                    // Otherwise.. check if it its an TypedObject
-                    else if ($data instanceof SabreAMF_ITypedObject) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
-
-                    // If everything else fails, its a general object
+                    if($data instanceof SabreAMF_ITypedObject) $type = SabreAMF_AMF0_Const::DT_TYPEDOBJECT;
+                    else if ($data instanceof SabreAMF_AMF3_Wrapper) $type = SabreAMF_AMF0_Const::DT_AMF3;
                     else $type = SabreAMF_AMF0_Const::DT_OBJECT;
                 }
-
-                // If everything failed, throw an exception
                 if ($type===false) {
                     throw new Exception('Unhandled data-type: ' . gettype($data));
                     return null;
@@ -103,10 +60,9 @@
                 case SabreAMF_AMF0_Const::DT_BOOL        : return $this->stream->writeByte($data==true);
                 case SabreAMF_AMF0_Const::DT_STRING      : return $this->writeString($data);
                 case SabreAMF_AMF0_Const::DT_OBJECT      : return $this->writeObject($data);
-                case SabreAMF_AMF0_Const::DT_NULL        : return true;
+                case SabreAMF_AMF0_Const::DT_NULL        : return true; 
+                //case self::AT_REFERENCE   : return $this->readReference();
                 case SabreAMF_AMF0_Const::DT_MIXEDARRAY  : return $this->writeMixedArray($data);
-                case SabreAMF_AMF0_Const::DT_ARRAY       : return $this->writeArray($data);
-                case SabreAMF_AMF0_Const::DT_DATE        : return $this->writeDate($data);
                 case SabreAMF_AMF0_Const::DT_LONGSTRING  : return $this->writeLongString();
                 case SabreAMF_AMF0_Const::DT_TYPEDOBJECT : return $this->writeTypedObject($data);
                 case SabreAMF_AMF0_Const::DT_AMF3        : return $this->writeAMF3Data($data);
@@ -131,28 +87,6 @@
             }
             $this->writeString('');
             $this->stream->writeByte(SabreAMF_AMF0_Const::DT_OBJECTTERM);
-
-        }
-
-        /**
-         * writeArray 
-         * 
-         * @param array $data 
-         * @return void
-         */
-        public function writeArray($data) {
-
-            if (!count($data)) {
-                $this->stream->writeLong(0);
-            } else {
-                end($data);
-                $last = key($data);
-                $this->stream->writeLong($last+1);
-                for($i=0;$i<=$last;$i++) {
-                    $item = isset($data[$i])?$data[$i]:NULL;
-                    $this->writeAMFData($item);
-                }
-            }
 
         }
 
@@ -202,18 +136,13 @@
        /**
          * writeTypedObject 
          * 
-         * @param object $data 
+         * @param SabreAMF_ITypedObject $data 
          * @return void
          */
-        public function writeTypedObject($data) {
+        public function writeTypedObject(SabreAMF_ITypedObject $data) {
 
-            if ($data instanceof SabreAMF_ITypedObject) {
-                    $classname = $data->getAMFClassName();
-                $data = $data->getAMFData();
-            } else $classname = $this->getRemoteClassName(get_class($data));
-
-            $this->writeString($classname);
-            return $this->writeObject($data);
+            $this->writeString($data->getAMFClassName());
+            return $this->writeObject($data->getAMFData());
 
         }
 
@@ -229,20 +158,6 @@
             $serializer = new SabreAMF_AMF3_Serializer($this->stream);
             return $serializer->writeAMFData($data->getData());
 
-        }
-
-        /**
-         * Writes a date object 
-         * 
-         * @param DateTime $data 
-         * @return void
-         */
-        public function writeDate(DateTime $data) {
-
-            $this->stream->writeDouble($data->format('U')*1000);
-
-            // empty timezone
-            $this->stream->writeInt(0);
         }
 
     }

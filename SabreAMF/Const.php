@@ -7,11 +7,11 @@
      * 
      * @package SabreAMF 
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
-    final class SabreAMF_Const {
+    abstract class SabreAMF_Const {
 
         /**
          * AC_Flash
@@ -30,9 +30,9 @@
         /**
          * AC_Flex
          *
-         * Specifies a FlashPlayer 9.0 client
+         * Specifies a FlashPlayer 8.5 client
          */
-        const AC_Flash9 = 3;
+        const AC_Flex = 3;
 
         /**
          * R_RESULT
@@ -55,20 +55,6 @@
          */
         const R_DEBUG  = 3;
 
-        /**
-         * AMF0 Encoding
-         */
-        const AMF0 = 0;
-
-        /**
-         * AMF3 Encoding
-         */
-        const AMF3 = 3;
-
-        /**
-         * AMF3 Encoding + flex messaging wrappers
-         */
-        const FLEXMSG = 16;
 
    }
 

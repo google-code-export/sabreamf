@@ -55,12 +55,11 @@
          * @param bool $dump 
          * @return void
          */
-        public function __construct() {
+        public function __construct($dump = false) {
 
-            $data = file_get_contents('php://input');
-            if (!$data) throw new Exception('No valid AMF request received');
+            $data = isset($GLOBALS['HTTP_RAW_POST_DATA'])?$GLOBALS['HTTP_RAW_POST_DATA']:file_get_contents(dirname(__FILE__) . '/test.amf');
 
-            //file_put_contents($dump.'/' . md5($data),$data);
+            if ($dump) file_put_contents($dump.'/' . md5($data),$data);
 
             $this->amfInputStream = new SabreAMF_InputStream($data);
            
@@ -110,7 +109,7 @@
                         $target = '/onDebugEvents';
                         break;
             }
-            return $this->amfResponse->addBody(array('target'=>$target,'response'=>'','data'=>$data));
+            return $this->amfResponse->addBody(array('target'=>$target,'response'=>'null','data'=>$data));
 
         }
 
@@ -124,38 +123,8 @@
         public function sendResponse() {
 
             header('Content-Type: application/x-amf');
-            $this->amfResponse->setEncoding($this->amfRequest->getEncoding());
             $this->amfResponse->serialize($this->amfOutputStream);
             echo($this->amfOutputStream->getRawData());
-
-        }
-
-        /**
-         * addHeader 
-         *
-         * Add a header to the server response
-         * 
-         * @param string $name 
-         * @param bool $required 
-         * @param mixed $data 
-         * @return void
-         */
-        public function addHeader($name,$required,$data) {
-
-            $this->amfResponse->addHeader(array('name'=>$name,'required'=>$required==true,'data'=>$data));
-
-        }
-
-        /**
-         * getRequestHeaders
-         *
-         * returns the request headers
-         *
-         * @return void
-         */
-        public function getRequestHeaders() {
-            
-            return $this->amfRequest->getHeaders();
 
         }
 

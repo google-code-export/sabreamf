@@ -1,9 +1,8 @@
 <?php
 
-    require_once 'SabreAMF/AMF0/Serializer.php'; 
-    require_once 'SabreAMF/AMF0/Deserializer.php'; 
-    require_once 'SabreAMF/Const.php';
-    require_once 'SabreAMF/AMF3/Wrapper.php';
+    require_once dirname(__FILE__) . '/AMF0/Serializer.php'; 
+    require_once dirname(__FILE__) . '/AMF0/Deserializer.php'; 
+
 
     /**
      * SabreAMF_Message 
@@ -12,8 +11,8 @@
      * 
      * @package SabreAMF 
      * @version $Id$
-     * @copyright 2006, 2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause)
      * @uses SabreAMF_AMF0_Serializer
      * @uses SabreAMF_AMF0_Deserializer
@@ -33,9 +32,9 @@
          */
         private $outputStream;
         /**
-         * clientType
-         *
-         * @var int
+         * clientType 
+         * 
+         * @var int 
          */
         private $clientType=0;
         /**
@@ -52,13 +51,6 @@
         private $headers=array();
 
         /**
-         * encoding 
-         * 
-         * @var int 
-         */
-        private $encoding = SabreAMF_Const::AMF0;
-
-        /**
          * serialize 
          * 
          * This method serializes a request. It requires an SabreAMF_OutputStream as an argument to read
@@ -71,18 +63,18 @@
 
             $this->outputStream = $stream;
             $stream->writeByte(0x00);
-            $stream->writeByte($this->encoding);
+            $stream->writeByte($this->clientType);
             $stream->writeInt(count($this->headers));
             
             foreach($this->headers as $header) {
 
                 $serializer = new SabreAMF_AMF0_Serializer($stream);
+                
                 $serializer->writeString($header['name']);
                 $stream->writeByte($header['required']==true);
                 $stream->writeLong(-1);
                 $serializer->writeAMFData($header['data']);
             }
-
             $stream->writeInt(count($this->bodies));
 
 
@@ -91,18 +83,7 @@
                 $serializer->writeString($body['target']);
                 $serializer->writeString($body['response']);
                 $stream->writeLong(-1);
-                
-                switch($this->encoding) {
-
-                    case SabreAMF_Const::AMF0 :
-                        $serializer->writeAMFData($body['data']);
-                        break;
-                    case SabreAMF_Const::AMF3 :
-                        $serializer->writeAMFData(new SabreAMF_AMF3_Wrapper($body['data']));
-                        break;
-
-                }
-
+                $serializer->writeAMFData($body['data']);
             }
 
         }
@@ -161,15 +142,7 @@
                     'length'   => $stream->readLong(),
                     'data'     => $deserializer->readAMFData(null,true)
                 );
-             
-
-                if ($body['data'] instanceof SabreAMF_AMF3_Wrapper) {
-                    $body['data'] = $body['data']->getData();
-                    $this->encoding = SabreAMF_Const::AMF3;
-                }
-               
-
-
+                
                 $this->bodies[] = $body;    
 
             }
@@ -241,29 +214,6 @@
         public function addHeader($header) {
 
             $this->headers[] = $header;
-
-        }
-
-        /**
-         * setEncoding 
-         * 
-         * @param int $encoding 
-         * @return void
-         */
-        public function setEncoding($encoding) {
-
-            $this->encoding = $encoding;
-
-        }
-
-        /**
-         * getEncoding 
-         * 
-         * @return int 
-         */
-        public function getEncoding() {
-
-            return $this->encoding; 
 
         }
 

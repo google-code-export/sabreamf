@@ -1,11 +1,11 @@
 <?php
 
-    require_once 'SabreAMF/AMF0/Const.php';
-    require_once 'SabreAMF/Const.php';
-    require_once 'SabreAMF/Deserializer.php';
-    require_once 'SabreAMF/AMF3/Deserializer.php';
-    require_once 'SabreAMF/AMF3/Wrapper.php';
-    require_once 'SabreAMF/TypedObject.php';
+    require_once dirname(__FILE__) . '/Const.php';
+    require_once dirname(__FILE__) . '/../Const.php';
+    require_once dirname(__FILE__) . '/../Deserializer.php';
+    require_once dirname(__FILE__) . '/../AMF3/Deserializer.php';
+    require_once dirname(__FILE__) . '/../AMF3/Wrapper.php';
+    require_once dirname(__FILE__) . '/../TypedObject.php';
 
     /**
      * SabreAMF_AMF0_Deserializer 
@@ -13,8 +13,8 @@
      * @package SabreAMF
      * @subpackage AMF0
      * @version $Id$
-     * @copyright 2006, 2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      * @uses SabreAMF_Const
      * @uses SabreAMF_AMF0_Const
@@ -30,13 +30,6 @@
          * @var array 
          */
         private $refList = array();
-
-        /**
-         * amf3Deserializer 
-         * 
-         * @var SabreAMF_AMF3_Deserializer 
-         */
-        private $amf3Deserializer = null;
 
         /**
          * readAMFData 
@@ -90,9 +83,7 @@
                 if ($vartype==SabreAMF_AMF0_Const::DT_OBJECTTERM) break;
                 $object[$key] = $this->readAmfData($vartype);
             }
-            if (defined('SABREAMF_OBJECT_AS_ARRAY')) {
-                $object = (object)$object;
-            }
+            $object = (object)$object;
             $this->refList[] = $object;
             return $object;    
 
@@ -174,17 +165,12 @@
          */
         public function readDate() {
 
-            // Unix timestamp in seconds. We strip the millisecond part
             $timestamp = floor($this->stream->readDouble() / 1000);
-
-            // we are ignoring the timezone
             $timezoneOffset = $this->stream->readInt();
-            //if ($timezoneOffset > 720) $timezoneOffset = ((65536 - $timezoneOffset));
-            //$timezoneOffset=($timezoneOffset * 60) - date('Z');
+            if ($timezoneOffset > 720) $timezoneOffset = ((65536 - $timezoneOffset));
+            $timezoneOffset=($timezoneOffset * 60) - date('Z');
+            return $timestamp + ($timezoneOffset);
 
-            $dateTime = new DateTime('@' . $timestamp);
-            
-            return $dateTime;
 
         }
 
@@ -203,13 +189,8 @@
                 if ($vartype==SabreAMF_AMF0_Const::DT_OBJECTTERM) break;
                 $object[$key] = $this->readAmfData($vartype);
             }
-            $object = (object)$object;
-            if ($classname = $this->getLocalClassName($classname)) {
-                // AAARRRGGGH
-            } else {
-                $object = new SabreAMF_TypedObject($classname,$object);
-                $this->refList[] = $object;
-            }
+            $object = new SabreAMF_TypedObject($classname,(object)$object);
+            $this->refList[] = $object;
             return $object;
 
         }
@@ -221,10 +202,8 @@
          */
         public function readAMF3Data() {
 
-            if (!$this->amf3Deserializer) {
-                $this->amf3Deserializer = new SabreAMF_AMF3_Deserializer($this->stream);
-            }
-            return new SabreAMF_AMF3_Wrapper($this->amf3Deserializer->readAMFData());
+            $deserializer = new SabreAMF_AMF3_Deserializer($this->stream);
+            return new SabreAMF_AMF3_Wrapper($deserializer->readAMFData());
 
         }
 

@@ -7,8 +7,8 @@
      * 
      * @package SabreAMF 
      * @version $Id$
-     * @copyright 2006-2007 Rooftop Solutions
-     * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+     * @copyright 2006 Rooftop Solutions
+     * @author Evert Pot <evert@collab.nl> 
      * @licence http://www.freebsd.org/copyright/license.html  BSD License (4 Clause) 
      */
     class SabreAMF_InputStream {
@@ -115,20 +115,7 @@
             $long = unpack("N",$block);
             return $long[1];
         }
-
-        /**
-         * readInt24 
-         * 
-         * return int 
-         */
-        public function readInt24() {
-
-            $block = chr(0) . $this->readBuffer(3);
-            $long = unpack("N",$block);
-            return $long[1];
-
-        }
-
+       
     }
 
 
