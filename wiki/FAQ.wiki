@@ -7,7 +7,7 @@ Because of the binary format the HTTP packages are also often smaller, especiall
 
 =How does SabreAMF compare to WebOrb for PHP or AMFPHP=
 
-If you are a beginner or you are looking for a very complete out of the box AMF solution, i would definitely advice to use [[http://www.amfphp.org/ AMFPHP]] or [[http://www.themidnightcoders.com/weborb/php/ WebOrb]]. Its pretty much install-and-go with those products.
+If you are a beginner or you are looking for a very complete out of the box AMF solution, i would definitely advice to use [http://www.amfphp.org/ AMFPHP] or [[http://www.themidnightcoders.com/weborb/php/ WebOrb]]. Its pretty much install-and-go with those products.
 
 If you are looking for a more low-level library to parse AMF data and requests, or you want to integrate flash remoting into your existing (webservices-)framework SabreAMF might be a better choice. It is written to not pollute the global namespace, apply 'proper' OOP and run in PHP 5.2 strict mode.
 
