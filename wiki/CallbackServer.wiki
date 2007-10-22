@@ -39,7 +39,8 @@ For every methodcall made from flash, a 'callback' function is called. In the pr
 
   }
 
-?>}}}
+?>
+}}}
 
 = Next steps =
 
