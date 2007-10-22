@@ -43,9 +43,11 @@ It will work just fine in PHP 5.1. PHP 5.0 is not supported and its use is disco
 
 ==Where do I start?==
 
+If you want to create an amf gateway, check out the [CallbackServer] documentation.
+
 The tgz package contains an examples folder, which should help you get started writing a server or client.
 
-Also, some examples can be found on the [http://www.rooftopsolutions.nl/code/?a=a&p=SabreAMF semi-offical blog]
+Also, some more advanced examples can be found on the [http://www.rooftopsolutions.nl/code/?a=a&p=SabreAMF semi-offical blog]
 
 ==How can I help out?==
 
