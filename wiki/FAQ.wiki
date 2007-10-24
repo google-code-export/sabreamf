@@ -14,6 +14,13 @@ If you are looking for a more low-level library to parse AMF data and requests, 
 
 Additionally, the package also contains an AMF client; which can be useful to test other services or poke through the alleged security of binary formats and crossdomain.xml.
 
+==What doesn't it do==
+
+  * It doesn't load services and execute methods for you
+  * It doesn't map VO's automatically
+  * It doesn't come with a service browser
+  * Probably more..
+
 ==Can I use SabreAMF with PHP 5.1==
 
 Yes, the only reason PHP5.2 is a requirement, is for the new DateTime object. If you create a class like this:
