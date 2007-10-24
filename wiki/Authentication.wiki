@@ -1,0 +1,72 @@
+#summary How to deal with authentication
+
+= What is it? =
+
+Flash remoting has a standard way to deal with authentication. AMF0 and AMF3 deal with this differently, but this is abstracted in SabreAMF.
+
+With the flash remoting components, you would use setCredentials(username,password) on the service object, in Flex you need to call setRemoteCredentials(username,password) on the RemoteObject to pass credentials.
+
+= How to capture it? =
+
+The servicebrowser has an onAuthenticate event you can use to capture the authentication.
+
+We'll use the example from the CallbackServer page.
+
+{{{
+<?php
+
+  // First we'll create the server object
+  require_once 'SabreAMF/CallbackServer.php';
+  $server = new SabreAMF_CallbackServer();
+
+  // setup the callback
+  $server->onInvokeService = 'myCallback';
+
+  // parse the request and spit out the response
+  $server->exec();
+
+  function myCallback($serviceName, $methodName, $arguments) {
+
+    // You can use the servicename to lookup and instantiate a service class
+    $serviceObject = new $serviceName;
+
+    // check the php manual if you don't know what this function does
+    return call_user_func_array(array($serviceObject,$methodName),$arguments);
+
+  }
+
+
+?>
+}}}
+
+To add the authenticate event, we need to add the following line before `$server->exec()`.
+
+{{{
+<?php
+  
+   $server->onAuthenticate = 'myAuthFunction';
+
+?>
+}}}
+
+The `myAuthFunction` should look like this:
+
+{{{
+<?
+
+  function myAuthFunction($username, $password) {
+
+     if ( /* authenticate the user */ ) {
+
+        return true;
+
+     } else {
+
+        throw new Exception('User could not be logged in');
+
+     }
+         
+  }
+
+?>
+}}}
