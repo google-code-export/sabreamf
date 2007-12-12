@@ -22,6 +22,16 @@ $server->exec();
 ?>
 }}}
 
+The previous example assumes that the SabreAMF directory is in your current working directory or include_path. If this is not the case, you can add it to the include_path using the following example:
+
+{{{
+<?php
+
+set_include_path( get_include_path() . PATH_SEPARATOR . '/path/to/sabreamf/directory');
+
+?>
+}}}
+
 = Callback function =
 
 For every methodcall made from flash, a 'callback' function is called. In the previous example the callback function was called `myCallback`. You have to create this function yourself. The function should have 3 arguments. For example:
