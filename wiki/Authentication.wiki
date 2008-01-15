@@ -1,4 +1,5 @@
 #summary How to deal with authentication
+#labels Phase-Implementation
 
 = What is it? =
 
@@ -70,3 +71,16 @@ The `myAuthFunction` should look like this:
 
 ?>
 }}}
+
+= Use in practice = 
+
+Overall authentication in AMF is badly designed, it's completely different in AMF0 and AMF3 and each method has nasty side effects.
+
+  * AMF0: The username and password are sent over the wire for every single request as a header. It is however not easily possible to send back a 'login failed' message back, this would only really possible through the result of the actual method being called.
+  * AMF3: The username and password are sent only once, and you can return a proper message if the user couldn't log in for some reason. However, there is no such thing as a session state, rendering authentication pretty much useless. It is possible to use cookies to maintain session information, but this does not work with Internet Explorer (tested on 6).
+
+== Solutions ==
+
+I'd strongly recommend building a custom login/session system. The easiest way to do this is by having a simple login service/method and returning a session id (or throw an exception when credentials are incorrect). 
+
+After this always send along the session id with every AMF request. One common solution for this is to change the gateway url to include the session id. You can re-attach the request to the session by using php's [http://www.php.net/session_id session_id function]
