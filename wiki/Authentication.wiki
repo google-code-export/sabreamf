@@ -84,3 +84,46 @@ Overall authentication in AMF is badly designed, it's completely different in AM
 I'd strongly recommend building a custom login/session system. The easiest way to do this is by having a simple login service/method and returning a session id (or throw an exception when credentials are incorrect). 
 
 After this always send along the session id with every AMF request. One common solution for this is to change the gateway url to include the session id. You can re-attach the request to the session by using php's [http://www.php.net/session_id session_id function]
+
+= Session support =
+
+Although AMF requests ignore HTTP cookies, it is possible to automatically attach a session id through AMF0. 
+
+The server can set a header in the AMF response, telling the client to modify the gateway url. This is only supported in AMF0, so if you want to do this using AMF3, you'll need to roll your own system for this.
+
+If you have an instance of SabreAMF_Server or SabreAMF_CallbackServer, you call the addHeader method, for example:
+
+{{{
+
+// assuming $server is an instance of SabreAMF_CallbackServer
+$server->addHeader('AppendToGatewayUrl',false,'?session=' . session_id());
+
+}}}
+
+We'll also need to recognize the session id, so here's a bit more complete example:
+
+{{{
+
+if (isset($_GET['session'])) {
+
+  session_id($_GET['session']);
+  session_start();
+
+} else {
+
+  session_start();
+  $server->addHeader('AppendToGatewayUrl',false,'?session=' . session_id());
+
+}
+
+}}}
+
+== Security note == 
+
+You are strongly recommended to verify if a session exists if it is supplied in the url. If you simply start a session with whatever id is supplied in the url, you could potentially make stealing cookies a lot easier.
+
+Also, it is recommended to change the session id whenever a user logs in, or logs out..
+
+== Alternative header ==
+
+Instead of 'AppendToGatewayUrl' it is also possible to make use of the 'ReplaceGatewayUrl' header. As the name indicates, it replaces the gateway url altogether and this can be useful if you need to replace an existing session id. This header expects an absolute url.
