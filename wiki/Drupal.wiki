@@ -19,6 +19,10 @@ Drupal 6 [http://www.drupal.org] is a well known open-source CMS(content managem
 If you installed Drupal 6 on your localhost (wamp, lampp server), then you can login as administrator user and point your browser to gateway [http://localhost/drupal/services/sabreamf] url.
 If all goes well, you will see a black screen with a nice SabreAMF+Drupal logo in the middle(another idea inspired by RubyAMF's [http://code.google.com/p/rubyamf] screen non amf clients attempting connection)
 
+Example:
+
+[http://sabreamf.googlecode.com/svn/trunk/integrations/drupal/module/sabreamf/media/images/gateway.png]
+
 It is recommended that you read all the txt files coming with this module, as you would find useful information
 
 = LICENCE =
