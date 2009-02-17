@@ -1,9 +1,8 @@
-#summary How to communicate with drupal
+#summary How to integrate/communicate with drupal
 
 = Distinction (case sensitive terms) =
 
-SabreAMF - is the php5 amf framework
-sabreamf - is the drupal module
+SabreAMF - is the php5 amf framework, but sabreamf - is the drupal module
 
 = What is it? =
 
