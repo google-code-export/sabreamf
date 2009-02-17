@@ -12,7 +12,7 @@ Drupal [http://www.drupal.org] is a well known opensource CMS(content management
 
 sabreamf module was greatly inspired by an existing drupal module that offered the same kind of functionality but that was ignored for a long period of time.
 
-sabreamf module needs Drupal Services[http://drupal.org/project/Services] module to be installed and enabled.
+sabreamf module needs Drupal Services [http://drupal.org/project/Services] module to be installed and enabled.
 
 = How to check if the gateway is working =
 
