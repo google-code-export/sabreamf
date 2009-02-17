@@ -24,4 +24,4 @@ It is recommended that you read all the txt files comming with this module, as y
 = LICENCE =
 
 Drupal comes with a GPL licence, where SabreAMF has its own licence, try to contact the people behind SabreAMF framework for their support if your commercial projects requires draconic licence measures.
-The drupal sabreamf module comes with a non restrictive licence, also known as WTFPL [http://sam.zoy.org/wtfpl/], even if the terms are using bad english, you get the picture, there are 0(zero) restrictions on this code or derivates.
+The drupal sabreamf module comes with a non restrictive licence, there are 0(zero) restrictions on this code or derivates (check COPYING.txt), other files included with this package can have their own applicable license if specified (or if technology itself requires it without mentioning)
