@@ -1,22 +1,22 @@
-#summary How to integrate/communicate with drupal
+#summary How to integrate/communicate with drupal 6
 
 = Distinction (case sensitive terms) =
 
-SabreAMF - is the php5 amf framework, but sabreamf - is the drupal module
+SabreAMF - is the php5 amf framework, but sabreamf - is the Drupal module
 
 = What is it? =
 
-Drupal [http://www.drupal.org] is a well known opensource CMS(content management system). This module allows a way to communication between drupal and flash/flex clients through amf protocol.
+Drupal 6 [http://www.drupal.org] is a well known opensource CMS(content management system). This module allows a way to communication between Drupal and Flash/Flex clients through AMF protocol.
 
 = How sabreamf drupal module does all this =
 
-sabreamf module was greatly inspired by an existing drupal (AMFPHP at [http://drupal.org/project/amfphp]) module that offered the same kind of functionality but that was ignored for a long period of time, but now it seems life is once again breath upon it(thank you Scott).
+sabreamf module was greatly inspired by an existing Drupal (AMFPHP at [http://drupal.org/project/amfphp]) module that offered the same kind of functionality but that was ignored for a long period of time, but now it seems life is once again breath upon it(thank you Scott).
 
 sabreamf module needs Drupal Services [http://drupal.org/project/Services] module to be installed and enabled.
 
 = How to check if the gateway is working =
 
-If you installed drupal 6 on your localhost (wamp, lampp server), then you can login as administrator user and point your browser to gateway [http://localhost/drupal/services/sabreamf] url.
+If you installed Drupal 6 on your localhost (wamp, lampp server), then you can login as administrator user and point your browser to gateway [http://localhost/drupal/services/sabreamf] url.
 If all goes well, you will see a black screen with a nice SabreAMF+Drupal logo in the middle(another ideea inspired by RubyAMF's [http://code.google.com/p/rubyamf] screen non amf clients attempting connection)
 
 It is recommended that you read all the txt files comming with this module, as you would find useful information
