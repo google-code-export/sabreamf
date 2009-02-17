@@ -2,7 +2,7 @@
 
 = Distinction (case sensitive terms) =
 
-SabreAMF - is the PHP5 AMF framework, but sabreamf - is the Drupal module
+SabreAMF - is the PHP5 AMF framework, but *sabreamf* - is the Drupal module
 
 = What is it? =
 
