@@ -10,7 +10,7 @@ Drupal [http://www.drupal.org] is a well known opensource CMS(content management
 
 = How sabreamf drupal module does all this =
 
-sabreamf module was greatly inspired by an existing drupal (AMFPHP at [http://drupal.org/project/amfphp]) module that offered the same kind of functionality but that was ignored for a long period of time.
+sabreamf module was greatly inspired by an existing drupal (AMFPHP at [http://drupal.org/project/amfphp]) module that offered the same kind of functionality but that was ignored for a long period of time, but now it seems life is once again breath upon it(thank you Scott).
 
 sabreamf module needs Drupal Services [http://drupal.org/project/Services] module to be installed and enabled.
 
