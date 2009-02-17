@@ -10,7 +10,7 @@ Drupal [http://www.drupal.org] is a well known opensource CMS(content management
 
 = How sabreamf drupal module does all this =
 
-sabreamf module was greatly inspired by an existing drupal module that offered the same kind of functionality but that was ignored for a long period of time.
+sabreamf module was greatly inspired by an existing drupal (AMFPHP at [http://drupal.org/project/amfphp]) module that offered the same kind of functionality but that was ignored for a long period of time.
 
 sabreamf module needs Drupal Services [http://drupal.org/project/Services] module to be installed and enabled.
 
@@ -25,4 +25,3 @@ It is recommended that you read all the txt files comming with this module, as y
 
 Drupal comes with a GPL licence, where SabreAMF has its own licence, try to contact the people behind SabreAMF framework for their support if your commercial projects requires draconic licence measures.
 The drupal sabreamf module comes with a non restrictive licence, also known as WTFPL [http://sam.zoy.org/wtfpl/], even if the terms are using bad english, you get the picture, there are 0(zero) restrictions on this code or derivates.
-
