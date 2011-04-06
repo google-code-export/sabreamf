@@ -1,0 +1,7 @@
+#summary One-sentence summary of this page.
+
+= Source has moved =
+
+The SabreAMF sourcecode is now hosted on [https://github.com/evert/SabreAMF github]. 
+
+  * https://github.com/evert/SabreAMF
